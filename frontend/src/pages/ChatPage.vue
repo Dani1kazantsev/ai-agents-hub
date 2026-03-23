@@ -9,12 +9,14 @@ import {
 } from 'lucide-vue-next'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import { useI18n } from 'vue-i18n'
 import { useChatStore } from '@/stores/chat'
 import { useAgentsStore } from '@/stores/agents'
 import { useAuthStore } from '@/stores/auth'
 import { api } from '@/lib/api'
 import ToolConfirmModal from '@/components/ToolConfirmModal.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const chatStore = useChatStore()
 const agentsStore = useAgentsStore()
@@ -98,7 +100,7 @@ async function handleSend() {
   if (attachedFiles.value.length > 0) {
     try {
       const paths = await uploadFiles()
-      const fileRefs = paths.map(p => `[Прикреплённый файл: ${p}]`).join('\n')
+      const fileRefs = paths.map(p => `[${t('chat.attachedFile', { path: p })}]`).join('\n')
       message = fileRefs + (content ? '\n\n' + content : '')
       // Clean up previews
       attachedFiles.value.forEach(e => { if (e.preview) URL.revokeObjectURL(e.preview) })
@@ -233,8 +235,8 @@ function getToolIcon(name: string) {
 }
 
 function getToolLabel(name: string) {
-  if (isMemoryTool(name)) return 'Память'
-  if (isOrchestratorTool(name)) return 'Оркестратор'
+  if (isMemoryTool(name)) return t('chat.memoryTool')
+  if (isOrchestratorTool(name)) return t('chat.orchestratorTool')
   return name
 }
 
@@ -274,7 +276,7 @@ onUnmounted(() => {
       </div>
       <div class="flex-1">
         <h2 class="font-heading text-sm font-medium text-text-primary">
-          {{ agentsStore.selectedAgent?.name || 'Агент' }}
+          {{ agentsStore.selectedAgent?.name || $t('common.agent') }}
         </h2>
         <p class="text-xs text-text-secondary">{{ agentsStore.selectedAgent?.model || '' }}</p>
       </div>
@@ -297,7 +299,7 @@ onUnmounted(() => {
         v-if="agentsStore.selectedAgent?.id"
         :to="`/agents/${agentsStore.selectedAgent.id}/memory`"
         class="p-2 rounded-lg text-text-secondary hover:text-purple-500 hover:bg-purple-500/10 transition-colors"
-        title="Память агента"
+        :title="$t('chat.agentMemory')"
       >
         <Brain :size="18" />
       </router-link>
@@ -309,13 +311,13 @@ onUnmounted(() => {
       class="mx-6 mt-2 px-4 py-2.5 bg-amber-500/10 border border-amber-500/30 rounded-lg text-sm text-amber-600 dark:text-amber-400 flex items-center gap-2"
     >
       <Brain :size="16" />
-      Контекст сжат — предыдущие сообщения суммаризованы для продолжения диалога
+      {{ $t('chat.contextCompacted') }}
     </div>
 
     <!-- Messages -->
     <div ref="messagesContainer" class="flex-1 overflow-auto px-12 py-6 flex flex-col gap-5">
       <div v-if="chatStore.messages.length === 0" class="flex-1 flex items-center justify-center">
-        <p class="text-sm text-text-muted">Начните диалог с агентом</p>
+        <p class="text-sm text-text-muted">{{ $t('chat.startDialog') }}</p>
       </div>
 
       <div
@@ -346,7 +348,7 @@ onUnmounted(() => {
               >
                 <img
                   :src="imgUrl"
-                  alt="Превью дизайна"
+                  :alt="$t('chat.designPreview')"
                   class="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                   @click="openImage(imgUrl)"
                 />
@@ -369,7 +371,7 @@ onUnmounted(() => {
                 </div>
                 <button
                   class="p-2 rounded-lg hover:bg-brand/10 text-brand transition-colors shrink-0"
-                  title="Скачать"
+                  :title="$t('common.download')"
                   @click="downloadFile(file.url, file.filename)"
                 >
                   <Download :size="18" />
@@ -387,7 +389,7 @@ onUnmounted(() => {
                 @click="toggleTools(msgIdx)"
               >
                 <Wrench :size="12" />
-                <span>Использованные инструменты ({{ msg.tool_calls?.length || 0 }})</span>
+                <span>{{ $t('chat.toolsUsed', { count: msg.tool_calls?.length || 0 }) }}</span>
                 <component
                   :is="expandedTools[msgIdx] ? ChevronDown : ChevronRight"
                   :size="12"
@@ -405,7 +407,7 @@ onUnmounted(() => {
 
                   <!-- Tool input -->
                   <div class="mt-1 text-[11px] text-text-secondary">
-                    <span class="font-medium">Параметры:</span>
+                    <span class="font-medium">{{ $t('chat.params') }}</span>
                     <pre class="mt-0.5 whitespace-pre-wrap break-all font-mono text-[10px] bg-bg-subtle rounded p-1.5">{{ formatToolInput(tool.tool_input) }}</pre>
                   </div>
 
@@ -414,7 +416,7 @@ onUnmounted(() => {
                     v-if="msg.tool_results && msg.tool_results[toolIdx]"
                     class="mt-1.5 text-[11px] text-text-secondary"
                   >
-                    <span class="font-medium">Результат:</span>
+                    <span class="font-medium">{{ $t('chat.result') }}</span>
                     <pre class="mt-0.5 whitespace-pre-wrap break-all font-mono text-[10px] bg-bg-subtle rounded p-1.5">{{
                       expandedResults[`${msgIdx}-${toolIdx}`]
                         ? msg.tool_results[toolIdx].content
@@ -425,7 +427,7 @@ onUnmounted(() => {
                       class="text-brand hover:underline mt-0.5"
                       @click="toggleResult(`${msgIdx}-${toolIdx}`)"
                     >
-                      {{ expandedResults[`${msgIdx}-${toolIdx}`] ? 'свернуть' : 'показать полностью' }}
+                      {{ expandedResults[`${msgIdx}-${toolIdx}`] ? $t('chat.collapseTool') : $t('chat.showFull') }}
                     </button>
                   </div>
                 </div>
@@ -482,7 +484,7 @@ onUnmounted(() => {
       <!-- Streaming indicator (only when no active tools) -->
       <div v-else-if="chatStore.isStreaming" class="flex items-center gap-2 text-xs text-text-secondary">
         <div class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-        Агент печатает...
+        {{ $t('chat.typing') }}
       </div>
     </div>
 
@@ -490,7 +492,7 @@ onUnmounted(() => {
     <div v-if="chatStore.subagentRuns.length > 0" class="px-12 py-3 border-t border-border shrink-0">
       <div class="text-xs font-medium text-text-primary mb-2 flex items-center gap-1.5">
         <Users :size="14" class="text-brand" />
-        Подагенты ({{ chatStore.subagentRuns.length }})
+        {{ $t('chat.subagents', { count: chatStore.subagentRuns.length }) }}
       </div>
       <div class="flex flex-col gap-1.5">
         <div
@@ -502,7 +504,7 @@ onUnmounted(() => {
             <Loader2 v-if="run.status === 'running'" :size="12" class="animate-spin text-brand shrink-0" />
             <Check v-else-if="run.status === 'completed'" :size="12" class="text-green-500 shrink-0" />
             <X v-else :size="12" class="text-red-500 shrink-0" />
-            <span class="font-medium text-text-primary truncate">{{ run.agent_name || 'Агент' }}</span>
+            <span class="font-medium text-text-primary truncate">{{ run.agent_name || $t('common.agent') }}</span>
             <span class="text-text-muted truncate">{{ run.task.slice(0, 80) }}</span>
           </div>
           <span
@@ -519,7 +521,7 @@ onUnmounted(() => {
           <button
             v-if="run.status === 'running'"
             class="p-1 rounded text-text-muted hover:text-red-500 transition-colors shrink-0"
-            title="Отменить"
+            :title="$t('chat.cancelSubagent')"
             @click="chatStore.killSubagent(run.id)"
           >
             <Square :size="12" />
@@ -532,8 +534,8 @@ onUnmounted(() => {
     <div v-if="!authStore.claudeAuthenticated"
          class="px-12 py-3 bg-amber-500/10 border-t border-amber-500/30 shrink-0">
       <div class="flex items-center gap-3 text-sm">
-        <span class="text-amber-600 dark:text-amber-400">Claude аккаунт не подключен.</span>
-        <router-link to="/claude-auth" class="text-[#5988FF] hover:underline font-medium">Подключить</router-link>
+        <span class="text-amber-600 dark:text-amber-400">{{ $t('chat.claudeNotConnected') }}</span>
+        <router-link to="/claude-auth" class="text-[#5988FF] hover:underline font-medium">{{ $t('chat.connect') }}</router-link>
       </div>
     </div>
 
@@ -576,7 +578,7 @@ onUnmounted(() => {
         />
         <button
           class="p-3 border border-border rounded-lg text-text-secondary hover:text-text-primary hover:border-text-secondary transition-colors shrink-0"
-          title="Прикрепить файл"
+          :title="$t('chat.attachFile')"
           @click="openFileDialog"
         >
           <Paperclip :size="18" />
@@ -585,7 +587,7 @@ onUnmounted(() => {
           ref="textareaRef"
           v-model="input"
           rows="1"
-          placeholder="Введите сообщение..."
+          :placeholder="$t('chat.placeholder')"
           class="flex-1 px-4 py-3 border border-border bg-bg-input text-text-primary rounded-lg text-sm outline-none focus:border-text-secondary transition-colors resize-none leading-relaxed"
           @keydown="handleKeydown"
           @input="autoResize"
@@ -596,7 +598,7 @@ onUnmounted(() => {
           @click="handleSend"
         >
           <Send :size="16" />
-          Отправить
+          {{ $t('chat.send') }}
         </button>
       </div>
     </div>

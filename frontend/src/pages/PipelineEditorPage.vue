@@ -6,6 +6,7 @@ import {
   Database, Palette, Server, Smartphone, ChevronDown, Trash2,
   Loader2, GripVertical, MessageSquare, Play, Check, Search,
 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 import { api } from '@/lib/api'
 import { useToast } from '@/composables/useToast'
 import { usePipelinesStore } from '@/stores/pipelines'
@@ -23,6 +24,7 @@ interface PipelineForm {
   steps: PipelineStep[]
 }
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
@@ -36,9 +38,9 @@ async function addFromCatalog(templateId: string) {
   addingId.value = templateId
   try {
     await pipelineStore.addToWorkspace(templateId)
-    toast.success('Пайплайн добавлен')
+    toast.success(t('pipelineEditor.pipelineAdded'))
   } catch {
-    toast.error('Не удалось добавить')
+    toast.error(t('pipelineEditor.addError'))
   } finally {
     addingId.value = null
   }
@@ -141,11 +143,11 @@ function onDragEnd() {
 
 async function save() {
   if (!form.value.title.trim()) {
-    toast.error('Введите название пайплайна')
+    toast.error(t('pipelineEditor.nameRequired'))
     return
   }
   if (form.value.steps.length === 0) {
-    toast.error('Добавьте хотя бы один шаг')
+    toast.error(t('pipelineEditor.stepsRequired'))
     return
   }
   saving.value = true
@@ -155,10 +157,10 @@ async function save() {
     } else {
       await api.post('/pipelines/templates', form.value)
     }
-    toast.success(isEdit.value ? 'Пайплайн обновлён' : 'Пайплайн создан')
+    toast.success(isEdit.value ? t('pipelineEditor.updated') : t('pipelineEditor.created'))
     router.push('/pipelines')
   } catch {
-    toast.error('Не удалось сохранить пайплайн')
+    toast.error(t('pipelineEditor.saveError'))
   } finally {
     saving.value = false
   }
@@ -187,7 +189,7 @@ onMounted(async () => {
         })),
       }
     } catch {
-      toast.error('Не удалось загрузить пайплайн')
+      toast.error(t('pipelineEditor.saveError'))
     } finally {
       loading.value = false
     }
@@ -205,10 +207,10 @@ onMounted(async () => {
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
         <h1 class="font-heading text-2xl sm:text-[32px] font-medium text-text-primary tracking-tight">
-          {{ isEdit ? 'Редактор пайплайна' : 'Добавить пайплайн' }}
+          {{ isEdit ? $t('pipelineEditor.editTitle') : $t('pipelineEditor.createTitle') }}
         </h1>
         <p class="text-sm text-text-secondary mt-1">
-          {{ isEdit ? 'Настройте цепочку агентов для автоматизации' : 'Создайте свой или добавьте из каталога' }}
+          {{ isEdit ? $t('pipelineEditor.editSubtitle') : $t('pipelineEditor.createSubtitle') }}
         </p>
       </div>
       <div v-if="activeTab === 'create' || isEdit" class="flex items-center gap-2 shrink-0">
@@ -217,7 +219,7 @@ onMounted(async () => {
           :disabled="saving"
           @click="cancel"
         >
-          Отменить
+          {{ $t('common.cancel') }}
         </button>
         <button
           class="flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium font-heading bg-brand text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
@@ -226,7 +228,7 @@ onMounted(async () => {
         >
           <Loader2 v-if="saving" :size="16" class="animate-spin" />
           <Save v-else :size="16" />
-          Сохранить
+          {{ $t('common.save') }}
         </button>
       </div>
       <div v-else>
@@ -234,7 +236,7 @@ onMounted(async () => {
           class="px-5 py-2.5 text-[13px] font-medium font-heading text-text-secondary border border-border rounded-lg hover:bg-bg-subtle transition-colors"
           @click="cancel"
         >
-          Назад
+          {{ $t('common.back') }}
         </button>
       </div>
     </div>
@@ -248,7 +250,7 @@ onMounted(async () => {
           : 'text-text-secondary hover:text-text-primary'"
         @click="activeTab = 'create'"
       >
-        С нуля
+        {{ $t('pipelineEditor.fromScratch') }}
       </button>
       <button
         class="px-4 py-2 text-[13px] font-medium rounded-md transition-colors"
@@ -257,7 +259,7 @@ onMounted(async () => {
           : 'text-text-secondary hover:text-text-primary'"
         @click="activeTab = 'catalog'"
       >
-        Из каталога
+        {{ $t('pipelineEditor.fromCatalog') }}
       </button>
     </div>
 
@@ -281,7 +283,7 @@ onMounted(async () => {
                   ? 'bg-brand/10 text-brand'
                   : 'bg-[#10B981]/10 text-[#10B981]'"
               >
-                {{ tpl.human_loop ? 'Чат с TL' : 'Авто' }}
+                {{ tpl.human_loop ? $t('pipelines.chatWithTL') : $t('pipelines.auto') }}
               </span>
             </div>
             <p class="text-xs text-text-secondary">{{ tpl.description }}</p>
@@ -299,14 +301,14 @@ onMounted(async () => {
           >
             <Loader2 v-if="addingId === tpl.id" :size="14" class="animate-spin" />
             <Plus v-else :size="14" />
-            Добавить
+            {{ $t('pipelines.addPipeline') }}
           </button>
         </div>
         <div
           v-if="pipelineStore.catalog.filter(t => !t.in_workspace).length === 0"
           class="text-center py-12 text-sm text-text-secondary"
         >
-          Все пайплайны из каталога уже добавлены в ваше рабочее пространство
+          {{ $t('pipelineEditor.allAdded') }}
         </div>
       </div>
     </div>
@@ -325,7 +327,7 @@ onMounted(async () => {
       <!-- Form -->
       <div class="flex flex-col gap-6 mb-8">
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Название пайплайна</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('pipelineEditor.pipelineName') }}</label>
           <input
             v-model="form.title"
             placeholder="Sprint Review Pipeline"
@@ -333,17 +335,17 @@ onMounted(async () => {
           />
         </div>
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Описание</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('common.description') }}</label>
           <input
             v-model="form.description"
-            placeholder="Автоматический сбор данных спринта и генерация отчёта"
+            placeholder="Sprint data collection and report generation"
             class="w-full px-4 py-3 border border-border bg-transparent text-text-secondary rounded-lg text-sm outline-none focus:border-text-secondary transition-colors"
           />
         </div>
 
         <!-- Mode toggle -->
         <div class="flex flex-col gap-2">
-          <label class="text-[13px] font-medium text-text-primary">Режим выполнения</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('pipelineEditor.executionMode') }}</label>
           <div class="flex gap-3">
             <button
               type="button"
@@ -354,7 +356,7 @@ onMounted(async () => {
               @click="form.human_loop = true"
             >
               <MessageSquare :size="14" />
-              Чат с Team Lead
+              {{ $t('pipelineEditor.chatWithTeamLead') }}
             </button>
             <button
               type="button"
@@ -365,13 +367,13 @@ onMounted(async () => {
               @click="form.human_loop = false"
             >
               <Play :size="14" />
-              Авто-выполнение
+              {{ $t('pipelineEditor.autoExecution') }}
             </button>
           </div>
           <p class="text-xs text-text-muted">
             {{ form.human_loop
-              ? 'AI Team Lead будет оркестрировать агентов и общаться с вами между шагами'
-              : 'Пайплайн выполнится автоматически без участия пользователя'
+              ? $t('pipelineEditor.chatHelp')
+              : $t('pipelineEditor.autoHelp')
             }}
           </p>
         </div>
@@ -379,7 +381,7 @@ onMounted(async () => {
 
       <!-- Steps -->
       <div class="flex flex-col gap-4">
-        <span class="text-[13px] font-medium text-text-primary">Шаги пайплайна</span>
+        <span class="text-[13px] font-medium text-text-primary">{{ $t('pipelineEditor.steps') }}</span>
 
         <div class="flex items-center gap-0 flex-wrap">
           <template v-for="(step, i) in form.steps" :key="i">
@@ -449,13 +451,13 @@ onMounted(async () => {
               <!-- Label input -->
               <input
                 v-model="step.label"
-                placeholder="Название шага..."
+                :placeholder="$t('pipelineEditor.stepName')"
                 class="text-[13px] text-text-primary bg-transparent outline-none w-full font-medium"
               />
               <!-- Description input -->
               <input
                 v-model="step.input_template"
-                placeholder="Описание задачи шага..."
+                :placeholder="$t('pipelineEditor.stepDescription')"
                 class="text-xs text-text-secondary bg-transparent outline-none w-full leading-relaxed"
               />
 
@@ -465,7 +467,7 @@ onMounted(async () => {
                   class="text-[11px] font-medium px-2 py-0.5 rounded"
                   :style="{ backgroundColor: getAgent(step.agent_slug).bg, color: getAgent(step.agent_slug).color }"
                 >
-                  Шаг {{ i + 1 }}
+                  {{ $t('pipelines.step', { n: i + 1 }) }}
                 </span>
               </div>
             </div>
@@ -489,11 +491,11 @@ onMounted(async () => {
         </div>
 
         <p v-if="form.steps.length === 0" class="text-sm text-text-muted">
-          Добавьте шаги пайплайна, нажав кнопку «+»
+          {{ $t('pipelineEditor.addStepsHelp') }}
         </p>
 
         <p v-if="form.steps.length > 1" class="text-xs text-text-muted">
-          Перетаскивайте карточки для изменения порядка шагов
+          {{ $t('pipelineEditor.dragHelp') }}
         </p>
       </div>
     </template>

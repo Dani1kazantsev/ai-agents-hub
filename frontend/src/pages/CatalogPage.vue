@@ -6,8 +6,10 @@ import { useAgentsStore } from '@/stores/agents'
 import { useChatStore } from '@/stores/chat'
 import AgentCard from '@/components/AgentCard.vue'
 import { useToast } from '@/composables/useToast'
+import { useI18n } from 'vue-i18n'
 import type { Agent } from '@/types'
 
+const { t } = useI18n()
 const router = useRouter()
 const agentsStore = useAgentsStore()
 const chatStore = useChatStore()
@@ -15,8 +17,8 @@ const toast = useToast()
 
 const searchQuery = ref('')
 const creatingChat = ref(false)
-const activeTag = ref('Все')
-const tags = ['Все', 'QA', 'Development', 'Product', 'Design', 'Data']
+const activeTag = ref('all')
+const tags = ['all', 'QA', 'Development', 'Product', 'Design', 'Data']
 
 const tagKeywords: Record<string, string[]> = {
   'QA': ['qa', 'testing', 'review'],
@@ -34,7 +36,7 @@ const filteredAgents = computed(() => {
       (a) => a.name.toLowerCase().includes(q) || a.description?.toLowerCase().includes(q)
     )
   }
-  if (activeTag.value !== 'Все') {
+  if (activeTag.value !== 'all') {
     const keywords = tagKeywords[activeTag.value] || []
     result = result.filter((a) =>
       a.tags?.some((t: string) => keywords.includes(t.toLowerCase()))
@@ -48,7 +50,7 @@ async function handleOpenChat(agent: Agent) {
 
   // Warn if agent needs Pencil but it's not available
   if (agentsStore.agentRequiresPencil(agent) && !agentsStore.integrations.pencil) {
-    toast.error('Для работы этого агента необходимо установить Pencil на сервере')
+    toast.error(t('catalog.pencilRequired'))
     return
   }
 
@@ -57,7 +59,7 @@ async function handleOpenChat(agent: Agent) {
     const session = await chatStore.createSession(agent.id)
     router.push(`/chats/${session.id}`)
   } catch {
-    toast.error('Не удалось создать чат')
+    toast.error(t('catalog.chatCreateError'))
   } finally {
     creatingChat.value = false
   }
@@ -74,10 +76,10 @@ onMounted(() => {
     <div class="flex items-start justify-between mb-2">
       <div>
         <h1 class="font-heading text-[32px] font-medium tracking-[-1px] text-text-primary">
-          Каталог агентов
+          {{ $t('catalog.title') }}
         </h1>
         <p class="text-sm text-text-secondary mt-1">
-          Выберите AI-агента для решения вашей задачи
+          {{ $t('catalog.subtitle') }}
         </p>
       </div>
       <div class="relative">
@@ -85,7 +87,7 @@ onMounted(() => {
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Поиск агентов..."
+          :placeholder="$t('catalog.searchPlaceholder')"
           class="w-[280px] pl-10 pr-4 py-2.5 border border-border bg-bg-input rounded-lg text-sm outline-none focus:border-text-secondary transition-colors"
         />
       </div>
@@ -100,7 +102,7 @@ onMounted(() => {
           : 'border border-border text-text-secondary hover:border-text-secondary'"
         @click="activeTag = tag"
       >
-        {{ tag }}
+        {{ tag === 'all' ? $t('common.all') : tag }}
       </button>
     </div>
     <div v-if="agentsStore.loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -129,7 +131,7 @@ onMounted(() => {
       />
     </div>
     <div v-if="!agentsStore.loading && filteredAgents.length === 0" class="text-sm text-text-secondary mt-4">
-      Агенты не найдены
+      {{ $t('catalog.notFound') }}
     </div>
   </div>
 </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Check, Loader, Terminal } from 'lucide-vue-next'
 import { api } from '@/lib/api'
 
@@ -13,6 +14,7 @@ interface StepResult {
   bg: string
 }
 
+const { t } = useI18n()
 const route = useRoute()
 
 const pipelineTitle = ref('Pipeline')
@@ -32,13 +34,13 @@ function formatElapsed(ms: number) {
 
 function updateAgo() {
   const mins = Math.floor((Date.now() - startTime) / 60000)
-  startedAgo.value = mins < 1 ? 'менее минуты назад' : `${mins} мин. назад`
+  startedAgo.value = mins < 1 ? t('pipelineRun.lessThanMinute') : t('pipelineRun.minutesAgo', { n: mins })
 }
 
 function statusBadge() {
-  if (pipelineStatus.value === 'running') return { text: 'Выполняется...', color: '#F59E0B', bg: '#FFFBEB' }
-  if (pipelineStatus.value === 'completed') return { text: 'Завершён', color: '#10B981', bg: '#F0FDF4' }
-  return { text: 'Ошибка', color: '#EF4444', bg: '#FEF2F2' }
+  if (pipelineStatus.value === 'running') return { text: t('pipelineRun.running'), color: '#F59E0B', bg: '#FFFBEB' }
+  if (pipelineStatus.value === 'completed') return { text: t('pipelineRun.completed'), color: '#10B981', bg: '#F0FDF4' }
+  return { text: t('pipelineRun.error'), color: '#EF4444', bg: '#FEF2F2' }
 }
 
 function addLog(text: string, color: string = '#7A7A7A') {
@@ -65,7 +67,7 @@ function connectWs(runId: string) {
         step.status = 'running'
         step.agent = data.agent_name || step.agent
         step.bg = '#FFFBEB'
-        addLog(`${step.agent} — начал выполнение`, '#F59E0B')
+        addLog(`${step.agent} — ${t('pipelines.running')}`, '#F59E0B')
       }
     } else if (data.type === 'step_stream') {
       addLog(`${steps.value[data.step]?.agent || 'Agent'} → ${data.content}`)
@@ -76,24 +78,24 @@ function connectWs(runId: string) {
       const step = steps.value[data.step]
       if (step) {
         step.status = 'done'
-        step.detail = data.output_preview || 'Завершено'
+        step.detail = data.output_preview || t('pipelineRun.completed')
         step.bg = '#F0FDF4'
         step.elapsed = formatElapsed(Date.now() - startTime)
-        addLog(`${step.agent} — завершён`, '#10B981')
+        addLog(`${step.agent} — ${t('pipelines.stepDone')}`, '#10B981')
       }
     } else if (data.type === 'step_error') {
       const step = steps.value[data.step]
       if (step) {
         step.status = 'error'
-        step.detail = data.content || 'Ошибка'
-        addLog(`${step.agent} — ошибка: ${data.content}`, '#EF4444')
+        step.detail = data.content || t('pipelineRun.error')
+        addLog(`${step.agent} — ${t('pipelineRun.error')}: ${data.content}`, '#EF4444')
       }
     } else if (data.type === 'pipeline_done') {
       pipelineStatus.value = 'completed'
-      addLog('Pipeline завершён', '#10B981')
+      addLog(t('pipelineRun.pipelineCompleted'), '#10B981')
     } else if (data.type === 'error') {
       pipelineStatus.value = 'error'
-      addLog(`Ошибка: ${data.content}`, '#EF4444')
+      addLog(`${t('pipelineRun.error')}: ${data.content}`, '#EF4444')
     }
   }
 
@@ -114,8 +116,8 @@ onMounted(async () => {
     pipelineTitle.value = data.title || 'Pipeline'
     steps.value = (data.steps || []).map((s: any, i: number) => ({
       step: i,
-      agent: s.agent_name || `Шаг ${i + 1}`,
-      detail: s.detail || 'Ожидает завершения предыдущего шага',
+      agent: s.agent_name || t('pipelines.step', { n: i + 1 }),
+      detail: s.detail || t('pipelineRun.waitingPrev'),
       status: s.status || 'pending',
       elapsed: '',
       bg: '',
@@ -141,7 +143,7 @@ onUnmounted(() => {
         <h1 class="font-heading text-[32px] font-medium text-text-primary tracking-tight">
           {{ pipelineTitle }}
         </h1>
-        <p class="text-sm text-text-secondary mt-1">Запущен {{ startedAgo }}</p>
+        <p class="text-sm text-text-secondary mt-1">{{ $t('pipelineRun.startedAgo', { time: startedAgo }) }}</p>
       </div>
       <div
         class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[13px] font-medium"
@@ -178,7 +180,7 @@ onUnmounted(() => {
         <!-- Info -->
         <div class="flex flex-col gap-1 flex-1 min-w-0">
           <span class="font-heading text-sm font-semibold text-text-primary">
-            Шаг {{ i + 1 }}: {{ step.agent }}
+            {{ $t('pipelines.step', { n: i + 1 }) }}: {{ step.agent }}
           </span>
           <span
             class="text-[13px] truncate"
@@ -199,7 +201,7 @@ onUnmounted(() => {
       </div>
 
       <div v-if="steps.length === 0" class="px-6 py-8 text-sm text-text-muted text-center">
-        Загрузка шагов...
+        {{ $t('pipelineRun.loadingSteps') }}
       </div>
     </div>
 
@@ -207,7 +209,7 @@ onUnmounted(() => {
     <div class="border border-border rounded-xl bg-bg-subtle p-5 flex flex-col gap-3 flex-1 min-h-[200px] overflow-auto">
       <div class="flex items-center gap-2 text-text-secondary">
         <Terminal :size="14" />
-        <span class="font-heading text-[13px] font-medium">Лог выполнения</span>
+        <span class="font-heading text-[13px] font-medium">{{ $t('pipelineRun.executionLog') }}</span>
       </div>
       <div class="flex flex-col gap-1 font-mono text-xs leading-relaxed">
         <div
@@ -218,7 +220,7 @@ onUnmounted(() => {
           <span class="text-text-muted">[{{ log.time }}]</span> {{ log.text }}
         </div>
         <div v-if="logs.length === 0" class="text-text-muted">
-          Ожидание событий...
+          {{ $t('pipelineRun.waitingEvents') }}
         </div>
       </div>
     </div>

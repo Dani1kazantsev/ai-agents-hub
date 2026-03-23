@@ -4,7 +4,9 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import { CheckCircle, ExternalLink, Loader2, LogOut, ShieldCheck } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const toast = useToast()
@@ -41,14 +43,14 @@ function startAuth() {
       if (data.success) {
         status.value = 'connected'
         auth.claudeAuthenticated = true
-        toast.success('Claude аккаунт подключен!')
+        toast.success(t('claudeAuth.connectSuccess'))
       } else {
         status.value = 'not_connected'
-        toast.error('Не удалось подключить аккаунт')
+        toast.error(t('claudeAuth.connectError'))
       }
     } else if (data.type === 'error') {
       status.value = 'not_connected'
-      toast.error(data.content || 'Ошибка подключения')
+      toast.error(data.content || t('claudeAuth.connectionError'))
     }
   }
 
@@ -72,10 +74,10 @@ async function disconnect() {
     if (res.ok) {
       auth.claudeAuthenticated = false
       status.value = 'not_connected'
-      toast.success('Claude аккаунт отключен')
+      toast.success(t('claudeAuth.disconnected'))
     }
   } catch {
-    toast.error('Ошибка при отключении')
+    toast.error(t('claudeAuth.disconnectError'))
   }
 }
 
@@ -98,9 +100,9 @@ checkStatus()
         <div class="w-16 h-16 rounded-2xl bg-[#5988FF]/10 flex items-center justify-center mx-auto mb-4">
           <ShieldCheck class="w-8 h-8 text-[#5988FF]" />
         </div>
-        <h1 class="text-2xl font-bold text-[var(--color-text-primary)]">Claude аккаунт</h1>
+        <h1 class="text-2xl font-bold text-[var(--color-text-primary)]">{{ $t('claudeAuth.title') }}</h1>
         <p class="text-sm text-[var(--color-text-secondary)] mt-2">
-          Подключите ваш Claude Team аккаунт для работы с агентами
+          {{ $t('claudeAuth.subtitle') }}
         </p>
       </div>
 
@@ -108,7 +110,7 @@ checkStatus()
       <div v-if="status === 'checking'"
            class="bg-[var(--color-bg-subtle)] rounded-xl p-8 text-center border border-[var(--color-border)]">
         <Loader2 class="w-8 h-8 animate-spin text-[#5988FF] mx-auto mb-3" />
-        <p class="text-sm text-[var(--color-text-secondary)]">Проверка статуса...</p>
+        <p class="text-sm text-[var(--color-text-secondary)]">{{ $t('claudeAuth.checking') }}</p>
       </div>
 
       <!-- Connected -->
@@ -117,20 +119,20 @@ checkStatus()
         <div class="flex items-center gap-3 mb-6">
           <CheckCircle class="w-6 h-6 text-green-500 shrink-0" />
           <div>
-            <p class="font-medium text-[var(--color-text-primary)]">Аккаунт подключен</p>
-            <p class="text-sm text-[var(--color-text-secondary)]">Ваш Claude Team аккаунт активен</p>
+            <p class="font-medium text-[var(--color-text-primary)]">{{ $t('claudeAuth.accountConnected') }}</p>
+            <p class="text-sm text-[var(--color-text-secondary)]">{{ $t('claudeAuth.accountActive') }}</p>
           </div>
         </div>
 
         <div class="flex gap-3">
           <button @click="router.push('/catalog')"
                   class="flex-1 px-4 py-2.5 bg-[#5988FF] text-white rounded-lg text-sm font-medium hover:bg-[#4A75E6] transition-colors">
-            Перейти в каталог
+            {{ $t('claudeAuth.goToCatalog') }}
           </button>
           <button @click="disconnect"
                   class="px-4 py-2.5 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] transition-colors flex items-center gap-2">
             <LogOut class="w-4 h-4" />
-            Отключить
+            {{ $t('claudeAuth.disconnect') }}
           </button>
         </div>
       </div>
@@ -139,18 +141,18 @@ checkStatus()
       <div v-else-if="status === 'not_connected'"
            class="bg-[var(--color-bg-subtle)] rounded-xl p-8 border border-[var(--color-border)]">
         <div class="mb-6">
-          <h3 class="font-medium text-[var(--color-text-primary)] mb-2">Как это работает</h3>
+          <h3 class="font-medium text-[var(--color-text-primary)] mb-2">{{ $t('claudeAuth.howItWorks') }}</h3>
           <ol class="text-sm text-[var(--color-text-secondary)] space-y-2 list-decimal list-inside">
-            <li>Нажмите "Подключить" — откроется процесс авторизации</li>
-            <li>Вы получите ссылку для входа в Claude</li>
-            <li>Перейдите по ссылке и войдите в свой Team аккаунт</li>
-            <li>После авторизации — можете работать с агентами</li>
+            <li>{{ $t('claudeAuth.step1') }}</li>
+            <li>{{ $t('claudeAuth.step2') }}</li>
+            <li>{{ $t('claudeAuth.step3') }}</li>
+            <li>{{ $t('claudeAuth.step4') }}</li>
           </ol>
         </div>
 
         <button @click="startAuth"
                 class="w-full px-4 py-2.5 bg-[#5988FF] text-white rounded-lg text-sm font-medium hover:bg-[#4A75E6] transition-colors">
-          Подключить Claude аккаунт
+          {{ $t('claudeAuth.connectButton') }}
         </button>
       </div>
 
@@ -161,7 +163,7 @@ checkStatus()
         <!-- Auth URL -->
         <div v-if="authUrl" class="mb-6">
           <p class="text-sm text-[var(--color-text-primary)] font-medium mb-2">
-            Перейдите по ссылке для авторизации:
+            {{ $t('claudeAuth.followLink') }}
           </p>
           <a :href="authUrl" target="_blank" rel="noopener noreferrer"
              class="flex items-center gap-2 px-4 py-3 bg-[#5988FF]/10 border border-[#5988FF]/30 rounded-lg text-[#5988FF] text-sm hover:bg-[#5988FF]/20 transition-colors break-all">
@@ -169,20 +171,20 @@ checkStatus()
             {{ authUrl }}
           </a>
           <p class="text-xs text-[var(--color-text-muted)] mt-2">
-            После авторизации в браузере, вернитесь сюда — статус обновится автоматически
+            {{ $t('claudeAuth.returnHere') }}
           </p>
         </div>
 
         <!-- Loading state -->
         <div v-else class="text-center mb-4">
           <Loader2 class="w-6 h-6 animate-spin text-[#5988FF] mx-auto mb-2" />
-          <p class="text-sm text-[var(--color-text-secondary)]">Запуск авторизации...</p>
+          <p class="text-sm text-[var(--color-text-secondary)]">{{ $t('claudeAuth.starting') }}</p>
         </div>
 
         <!-- Terminal output -->
         <div v-if="terminalOutput.length > 0"
              class="bg-[var(--color-bg-main)] rounded-lg border border-[var(--color-border)] p-3 max-h-48 overflow-y-auto">
-          <p class="text-xs font-mono text-[var(--color-text-muted)] mb-1">Вывод терминала:</p>
+          <p class="text-xs font-mono text-[var(--color-text-muted)] mb-1">{{ $t('claudeAuth.terminalOutput') }}</p>
           <div class="text-xs font-mono text-[var(--color-text-secondary)] space-y-0.5">
             <p v-for="(line, i) in terminalOutput" :key="i">{{ line }}</p>
           </div>

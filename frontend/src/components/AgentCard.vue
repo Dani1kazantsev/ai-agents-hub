@@ -2,7 +2,10 @@
 import { computed } from 'vue'
 import { Bot, AlertTriangle } from 'lucide-vue-next'
 import { useAgentsStore } from '@/stores/agents'
+import { useI18n } from 'vue-i18n'
 import type { Agent } from '@/types'
+
+const { t } = useI18n()
 
 const props = defineProps<{ agent: Agent }>()
 const emit = defineEmits<{ 'open-chat': [agent: Agent] }>()
@@ -35,7 +38,7 @@ const pencilUnavailable = computed(() =>
     <!-- Pencil not installed warning -->
     <div v-if="pencilUnavailable" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
       <AlertTriangle :size="14" class="text-amber-500 shrink-0" />
-      <span class="text-xs text-amber-600 dark:text-amber-400">Требуется Pencil</span>
+      <span class="text-xs text-amber-600 dark:text-amber-400">{{ $t('catalog.requiresPencil') }}</span>
     </div>
     <div class="flex items-center justify-between mt-auto">
       <span
@@ -49,7 +52,7 @@ const pencilUnavailable = computed(() =>
         class="font-heading text-sm font-medium bg-brand text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
         @click="emit('open-chat', agent)"
       >
-        Открыть чат &rarr;
+        {{ $t('catalog.openChat') }} &rarr;
       </button>
     </div>
   </div>

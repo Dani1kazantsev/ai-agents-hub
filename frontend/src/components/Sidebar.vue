@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { LayoutGrid, MessageSquare, GitBranch, Settings, Zap, LogOut, Sun, Moon, ShieldCheck, Brain } from 'lucide-vue-next'
+import { LayoutGrid, MessageSquare, GitBranch, Settings, Zap, LogOut, Sun, Moon, ShieldCheck, Brain, Globe } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
+import { setLocale } from '@/i18n'
 
+const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
 const isDark = ref(false)
 
-const navItems = [
-  { label: 'Каталог', icon: LayoutGrid, path: '/catalog' },
-  { label: 'Мои чаты', icon: MessageSquare, path: '/chats' },
-  { label: 'Пайплайны', icon: GitBranch, path: '/pipelines' },
-  { label: 'Админка', icon: Settings, path: '/admin' },
-]
+const navItems = computed(() => [
+  { label: t('sidebar.catalog'), icon: LayoutGrid, path: '/catalog' },
+  { label: t('sidebar.myChats'), icon: MessageSquare, path: '/chats' },
+  { label: t('sidebar.pipelines'), icon: GitBranch, path: '/pipelines' },
+  { label: t('sidebar.admin'), icon: Settings, path: '/admin' },
+])
 
 function isActive(path: string) {
   return route.path === path || route.path.startsWith(path + '/')
@@ -25,6 +28,11 @@ function toggleTheme() {
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+}
+
+function toggleLocale() {
+  const newLocale = locale.value === 'ru' ? 'en' : 'ru'
+  setLocale(newLocale)
 }
 
 function handleLogout() {
@@ -68,14 +76,14 @@ onMounted(() => {
 
     <!-- Memory link (visible when viewing agent-related pages) -->
     <div v-if="route.path.includes('/agents/') || route.path.includes('/chats/')" class="px-2 mt-2">
-      <div class="text-[10px] font-medium text-text-muted uppercase tracking-wider px-3 mb-1">Инструменты</div>
+      <div class="text-[10px] font-medium text-text-muted uppercase tracking-wider px-3 mb-1">{{ $t('sidebar.tools') }}</div>
       <router-link
         v-if="route.path.match(/\/agents\/([^/]+)\/memory/)"
         :to="route.path"
         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm bg-bg-subtle text-text-primary font-medium"
       >
         <Brain :size="20" class="text-purple-500" />
-        <span class="font-heading">Память</span>
+        <span class="font-heading">{{ $t('sidebar.memory') }}</span>
       </router-link>
     </div>
 
@@ -95,7 +103,7 @@ onMounted(() => {
             isActive('/claude-auth') ? 'text-brand' : '',
           ]"
         />
-        <span class="font-heading">Claude аккаунт</span>
+        <span class="font-heading">{{ $t('sidebar.claudeAccount') }}</span>
         <span v-if="auth.claudeAuthenticated"
               class="ml-auto w-2 h-2 rounded-full bg-green-500" />
       </router-link>
@@ -104,14 +112,21 @@ onMounted(() => {
         @click="toggleTheme"
       >
         <component :is="isDark ? Sun : Moon" :size="20" />
-        <span class="font-heading">{{ isDark ? 'Светлая тема' : 'Тёмная тема' }}</span>
+        <span class="font-heading">{{ isDark ? $t('sidebar.lightTheme') : $t('sidebar.darkTheme') }}</span>
+      </button>
+      <button
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:bg-bg-subtle transition-colors w-full"
+        @click="toggleLocale"
+      >
+        <Globe :size="20" />
+        <span class="font-heading">{{ locale === 'ru' ? 'EN' : 'RU' }}</span>
       </button>
       <button
         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:bg-bg-subtle transition-colors w-full"
         @click="handleLogout"
       >
         <LogOut :size="20" />
-        <span class="font-heading">Выйти</span>
+        <span class="font-heading">{{ $t('auth.logout') }}</span>
       </button>
     </div>
   </aside>

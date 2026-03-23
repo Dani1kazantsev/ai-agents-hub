@@ -4,7 +4,9 @@ import { useRouter } from 'vue-router'
 import { Plus, MessageSquare, LayoutGrid, Trash2, X } from 'lucide-vue-next'
 import { useChatStore } from '@/stores/chat'
 import { useToast } from '@/composables/useToast'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const chatStore = useChatStore()
 const toast = useToast()
@@ -23,9 +25,9 @@ async function deleteChat() {
   deletingIds.value.add(sessionId)
   try {
     await chatStore.deleteSession(sessionId)
-    toast.success('Чат удалён')
+    toast.success(t('chats.chatDeleted'))
   } catch {
-    toast.error('Не удалось удалить чат')
+    toast.error(t('chats.chatDeleteError'))
   } finally {
     deletingIds.value.delete(sessionId)
   }
@@ -43,10 +45,10 @@ function formatDate(iso: string) {
 
 function statusLabel(status: string) {
   const map: Record<string, string> = {
-    active: 'Активный',
-    inactive: 'Неактивный',
-    closed: 'Завершён',
-    error: 'Ошибка',
+    active: t('chats.statusActive'),
+    inactive: t('chats.statusInactive'),
+    closed: t('chats.statusClosed'),
+    error: t('chats.statusError'),
   }
   return map[status] || status
 }
@@ -76,24 +78,24 @@ onMounted(async () => {
     <div class="flex items-start justify-between mb-8">
       <div>
         <h1 class="font-heading text-[32px] font-medium tracking-[-1px] text-text-primary">
-          Мои чаты
+          {{ $t('chats.title') }}
         </h1>
-        <p class="text-sm text-text-secondary mt-1">История ваших диалогов с агентами</p>
+        <p class="text-sm text-text-secondary mt-1">{{ $t('chats.subtitle') }}</p>
       </div>
       <button
         class="font-heading flex items-center gap-2 bg-brand text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity"
         @click="router.push('/catalog')"
       >
         <Plus :size="18" />
-        Новый чат
+        {{ $t('chats.newChat') }}
       </button>
     </div>
     <div class="border border-border rounded-xl overflow-hidden">
       <div class="grid grid-cols-[1fr_2fr_180px_120px_56px] bg-bg-subtle text-xs font-medium text-text-secondary uppercase tracking-wider">
-        <div class="px-5 py-3">Агент</div>
-        <div class="px-5 py-3">Последнее сообщение</div>
-        <div class="px-5 py-3">Дата</div>
-        <div class="px-5 py-3">Статус</div>
+        <div class="px-5 py-3">{{ $t('common.agent') }}</div>
+        <div class="px-5 py-3">{{ $t('chats.lastMessage') }}</div>
+        <div class="px-5 py-3">{{ $t('chats.date') }}</div>
+        <div class="px-5 py-3">{{ $t('common.status') }}</div>
         <div class="px-5 py-3"></div>
       </div>
       <!-- Loading skeleton -->
@@ -111,17 +113,15 @@ onMounted(async () => {
         <div class="w-[72px] h-[72px] rounded-full bg-bg-subtle border border-border flex items-center justify-center">
           <MessageSquare :size="32" class="text-text-muted" />
         </div>
-        <h3 class="font-heading text-xl font-semibold text-text-primary">Нет чатов</h3>
-        <p class="text-sm text-text-secondary text-center leading-relaxed max-w-[320px]">
-          Вы ещё не начинали разговоров с агентами.<br />
-          Выберите агента в каталоге, чтобы начать.
+        <h3 class="font-heading text-xl font-semibold text-text-primary">{{ $t('chats.noChats') }}</h3>
+        <p class="text-sm text-text-secondary text-center leading-relaxed max-w-[320px]" v-html="$t('chats.noChatsText').replace('\n', '<br />')">
         </p>
         <button
           class="flex items-center gap-2 bg-brand text-white text-[13px] font-medium font-heading px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity mt-2"
           @click="router.push('/catalog')"
         >
           <LayoutGrid :size="16" />
-          Перейти в каталог
+          {{ $t('chats.goToCatalog') }}
         </button>
       </div>
       <div
@@ -132,7 +132,7 @@ onMounted(async () => {
         @click="router.push(`/chats/${session.id}`)"
       >
         <div class="px-5 py-4 text-sm font-medium text-text-primary truncate">
-          {{ session.agent_name || 'Агент' }}
+          {{ session.agent_name || $t('common.agent') }}
         </div>
         <div class="px-5 py-4 text-sm text-text-secondary truncate">
           {{ session.messages.length ? session.messages[session.messages.length - 1].content : '...' }}
@@ -148,7 +148,7 @@ onMounted(async () => {
         <div class="px-3 py-4 flex items-center justify-center">
           <button
             class="text-text-muted hover:text-red-500 transition-colors p-1 rounded cursor-pointer"
-            title="Удалить чат"
+            :title="$t('chats.deleteChat')"
             :disabled="deletingIds.has(session.id)"
             @click.stop="confirmDelete(session.id)"
           >
@@ -166,24 +166,24 @@ onMounted(async () => {
     >
       <div class="bg-bg-card border border-border rounded-xl p-6 w-[400px]">
         <div class="flex items-center justify-between mb-2">
-          <h3 class="font-heading text-lg font-semibold text-text-primary">Удалить чат?</h3>
+          <h3 class="font-heading text-lg font-semibold text-text-primary">{{ $t('chats.deleteChatConfirm') }}</h3>
           <button class="text-text-secondary hover:text-text-primary cursor-pointer" @click="deleteConfirm = null">
             <X :size="18" />
           </button>
         </div>
-        <p class="text-sm text-text-secondary mb-6">Это действие необратимо. Все сообщения в этом чате будут удалены.</p>
+        <p class="text-sm text-text-secondary mb-6">{{ $t('chats.deleteChatText') }}</p>
         <div class="flex justify-end gap-3">
           <button
             class="px-4 py-2 text-sm text-text-secondary border border-border rounded-lg hover:bg-bg-subtle transition-colors cursor-pointer"
             @click="deleteConfirm = null"
           >
-            Отмена
+            {{ $t('common.cancel') }}
           </button>
           <button
             class="px-4 py-2 text-sm bg-[#EF4444] text-white rounded-lg hover:opacity-90 transition-opacity font-heading font-medium cursor-pointer"
             @click="deleteChat()"
           >
-            Удалить
+            {{ $t('common.delete') }}
           </button>
         </div>
       </div>

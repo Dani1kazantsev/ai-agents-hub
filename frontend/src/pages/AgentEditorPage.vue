@@ -8,6 +8,7 @@ import {
 } from 'lucide-vue-next'
 import { api } from '@/lib/api'
 import { useToast } from '@/composables/useToast'
+import { useI18n } from 'vue-i18n'
 
 interface AgentForm {
   name: string
@@ -26,6 +27,7 @@ interface AgentForm {
   memory_scope: string
 }
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
@@ -55,20 +57,20 @@ const newTool = ref('')
 const showToolPicker = ref(false)
 
 // All available MCP tools grouped by service
-const toolCatalog = [
+const toolCatalog = computed(() => [
   {
     service: 'jira',
     label: 'Jira',
     icon: Clipboard,
     color: '#0052CC',
     tools: [
-      { id: 'jira:search_issues', label: 'Поиск задач' },
-      { id: 'jira:get_issue', label: 'Получить задачу' },
-      { id: 'jira:create_issue', label: 'Создать задачу' },
-      { id: 'jira:update_issue', label: 'Обновить задачу' },
-      { id: 'jira:add_comment', label: 'Добавить комментарий' },
-      { id: 'jira:get_transitions', label: 'Получить переходы' },
-      { id: 'jira:transition_issue', label: 'Сменить статус' },
+      { id: 'jira:search_issues', label: t('tools.jira.search_issues') },
+      { id: 'jira:get_issue', label: t('tools.jira.get_issue') },
+      { id: 'jira:create_issue', label: t('tools.jira.create_issue') },
+      { id: 'jira:update_issue', label: t('tools.jira.update_issue') },
+      { id: 'jira:add_comment', label: t('tools.jira.add_comment') },
+      { id: 'jira:get_transitions', label: t('tools.jira.get_transitions') },
+      { id: 'jira:transition_issue', label: t('tools.jira.transition_issue') },
     ],
   },
   {
@@ -77,14 +79,14 @@ const toolCatalog = [
     icon: GitBranch,
     color: '#FC6D26',
     tools: [
-      { id: 'gitlab:read_file', label: 'Прочитать файл' },
-      { id: 'gitlab:list_files', label: 'Список файлов' },
-      { id: 'gitlab:list_mrs', label: 'Список MR' },
-      { id: 'gitlab:get_mr_diff', label: 'Diff MR' },
-      { id: 'gitlab:add_mr_comment', label: 'Комментарий к MR' },
-      { id: 'gitlab:create_branch', label: 'Создать ветку' },
-      { id: 'gitlab:commit_files', label: 'Коммит файлов' },
-      { id: 'gitlab:create_mr', label: 'Создать MR' },
+      { id: 'gitlab:read_file', label: t('tools.gitlab.read_file') },
+      { id: 'gitlab:list_files', label: t('tools.gitlab.list_files') },
+      { id: 'gitlab:list_mrs', label: t('tools.gitlab.list_mrs') },
+      { id: 'gitlab:get_mr_diff', label: t('tools.gitlab.get_mr_diff') },
+      { id: 'gitlab:add_mr_comment', label: t('tools.gitlab.add_mr_comment') },
+      { id: 'gitlab:create_branch', label: t('tools.gitlab.create_branch') },
+      { id: 'gitlab:commit_files', label: t('tools.gitlab.commit_files') },
+      { id: 'gitlab:create_mr', label: t('tools.gitlab.create_mr') },
     ],
   },
   {
@@ -93,9 +95,9 @@ const toolCatalog = [
     icon: Database,
     color: '#336791',
     tools: [
-      { id: 'db:read_query', label: 'SQL запрос' },
-      { id: 'db:describe_table', label: 'Схема таблицы' },
-      { id: 'db:list_tables', label: 'Список таблиц' },
+      { id: 'db:read_query', label: t('tools.db.read_query') },
+      { id: 'db:describe_table', label: t('tools.db.describe_table') },
+      { id: 'db:list_tables', label: t('tools.db.list_tables') },
     ],
   },
   {
@@ -104,10 +106,10 @@ const toolCatalog = [
     icon: Compass,
     color: '#10B981',
     tools: [
-      { id: 'docs:get_context', label: 'Контекст проекта' },
-      { id: 'docs:get_project', label: 'Информация о проекте' },
-      { id: 'docs:get_team', label: 'Информация о команде' },
-      { id: 'docs:search_docs', label: 'Поиск по документам' },
+      { id: 'docs:get_context', label: t('tools.docs.get_context') },
+      { id: 'docs:get_project', label: t('tools.docs.get_project') },
+      { id: 'docs:get_team', label: t('tools.docs.get_team') },
+      { id: 'docs:search_docs', label: t('tools.docs.search_docs') },
     ],
   },
   {
@@ -116,11 +118,11 @@ const toolCatalog = [
     icon: Pen,
     color: '#A259FF',
     tools: [
-      { id: 'figma:get_file', label: 'Получить файл' },
-      { id: 'figma:get_file_nodes', label: 'Ноды файла' },
-      { id: 'figma:get_file_styles', label: 'Стили файла' },
-      { id: 'figma:get_file_components', label: 'Компоненты' },
-      { id: 'figma:get_file_images', label: 'Изображения' },
+      { id: 'figma:get_file', label: t('tools.figma.get_file') },
+      { id: 'figma:get_file_nodes', label: t('tools.figma.get_file_nodes') },
+      { id: 'figma:get_file_styles', label: t('tools.figma.get_file_styles') },
+      { id: 'figma:get_file_components', label: t('tools.figma.get_file_components') },
+      { id: 'figma:get_file_images', label: t('tools.figma.get_file_images') },
     ],
   },
   {
@@ -129,24 +131,24 @@ const toolCatalog = [
     icon: Layout,
     color: '#FF6B6B',
     tools: [
-      { id: 'pencil:get_editor_state', label: 'Состояние редактора' },
-      { id: 'pencil:open_document', label: 'Открыть документ' },
-      { id: 'pencil:get_guidelines', label: 'Гайдлайны' },
-      { id: 'pencil:get_style_guide_tags', label: 'Теги стилей' },
-      { id: 'pencil:get_style_guide', label: 'Стиль-гайд' },
-      { id: 'pencil:batch_get', label: 'Чтение нод' },
-      { id: 'pencil:batch_design', label: 'Дизайн операции' },
-      { id: 'pencil:snapshot_layout', label: 'Снимок макета' },
-      { id: 'pencil:get_screenshot', label: 'Скриншот' },
-      { id: 'pencil:get_variables', label: 'Переменные' },
-      { id: 'pencil:set_variables', label: 'Установить переменные' },
-      { id: 'pencil:find_empty_space_on_canvas', label: 'Найти место' },
-      { id: 'pencil:search_all_unique_properties', label: 'Поиск свойств' },
-      { id: 'pencil:replace_all_matching_properties', label: 'Замена свойств' },
-      { id: 'pencil:export_nodes', label: 'Экспорт нод' },
+      { id: 'pencil:get_editor_state', label: t('tools.pencil.get_editor_state') },
+      { id: 'pencil:open_document', label: t('tools.pencil.open_document') },
+      { id: 'pencil:get_guidelines', label: t('tools.pencil.get_guidelines') },
+      { id: 'pencil:get_style_guide_tags', label: t('tools.pencil.get_style_guide_tags') },
+      { id: 'pencil:get_style_guide', label: t('tools.pencil.get_style_guide') },
+      { id: 'pencil:batch_get', label: t('tools.pencil.batch_get') },
+      { id: 'pencil:batch_design', label: t('tools.pencil.batch_design') },
+      { id: 'pencil:snapshot_layout', label: t('tools.pencil.snapshot_layout') },
+      { id: 'pencil:get_screenshot', label: t('tools.pencil.get_screenshot') },
+      { id: 'pencil:get_variables', label: t('tools.pencil.get_variables') },
+      { id: 'pencil:set_variables', label: t('tools.pencil.set_variables') },
+      { id: 'pencil:find_empty_space_on_canvas', label: t('tools.pencil.find_empty_space_on_canvas') },
+      { id: 'pencil:search_all_unique_properties', label: t('tools.pencil.search_all_unique_properties') },
+      { id: 'pencil:replace_all_matching_properties', label: t('tools.pencil.replace_all_matching_properties') },
+      { id: 'pencil:export_nodes', label: t('tools.pencil.export_nodes') },
     ],
   },
-]
+])
 
 function isToolSelected(toolId: string): boolean {
   return form.value.tools.includes(toolId)
@@ -161,7 +163,7 @@ function toggleTool(toolId: string) {
   }
 }
 
-function toggleServiceAll(service: typeof toolCatalog[0]) {
+function toggleServiceAll(service: typeof toolCatalog.value[0]) {
   const allSelected = service.tools.every(t => form.value.tools.includes(t.id))
   if (allSelected) {
     // Deselect all
@@ -177,22 +179,22 @@ function toggleServiceAll(service: typeof toolCatalog[0]) {
   }
 }
 
-function isServiceFullySelected(service: typeof toolCatalog[0]): boolean {
+function isServiceFullySelected(service: typeof toolCatalog.value[0]): boolean {
   return service.tools.every(t => form.value.tools.includes(t.id))
 }
 
-function isServicePartiallySelected(service: typeof toolCatalog[0]): boolean {
+function isServicePartiallySelected(service: typeof toolCatalog.value[0]): boolean {
   return service.tools.some(t => form.value.tools.includes(t.id)) && !isServiceFullySelected(service)
 }
 
-function getServiceToolCount(service: typeof toolCatalog[0]): number {
+function getServiceToolCount(service: typeof toolCatalog.value[0]): number {
   return service.tools.filter(t => form.value.tools.includes(t.id)).length
 }
 
 // Build a flat lookup for tool display info
 const toolDisplayMap = computed(() => {
   const map: Record<string, { label: string; service: string; serviceLabel: string; color: string; icon: any }> = {}
-  for (const group of toolCatalog) {
+  for (const group of toolCatalog.value) {
     for (const tool of group.tools) {
       map[tool.id] = { label: tool.label, service: group.service, serviceLabel: group.label, color: group.color, icon: group.icon }
     }
@@ -207,17 +209,17 @@ function getToolDisplay(toolId: string) {
 // Group selected tools by service for compact display
 const selectedByService = computed(() => {
   const groups: { service: string; label: string; color: string; icon: any; tools: { id: string; label: string }[] }[] = []
-  for (const group of toolCatalog) {
+  for (const group of toolCatalog.value) {
     const selected = group.tools.filter(t => form.value.tools.includes(t.id))
     if (selected.length > 0) {
       groups.push({ service: group.service, label: group.label, color: group.color, icon: group.icon, tools: selected })
     }
   }
   // Add unknown tools (custom ones not in catalog)
-  const knownIds = new Set(toolCatalog.flatMap(g => g.tools.map(t => t.id)))
+  const knownIds = new Set(toolCatalog.value.flatMap(g => g.tools.map(t => t.id)))
   const custom = form.value.tools.filter(t => !knownIds.has(t))
   if (custom.length > 0) {
-    groups.push({ service: 'custom', label: 'Кастомные', color: '#6B7280', icon: Settings2, tools: custom.map(id => ({ id, label: id })) })
+    groups.push({ service: 'custom', label: t('agentEditor.customTools'), color: '#6B7280', icon: Settings2, tools: custom.map(id => ({ id, label: id })) })
   }
   return groups
 })
@@ -303,7 +305,7 @@ function handleToolKeydown(e: KeyboardEvent) {
 
 async function save() {
   if (!form.value.name.trim()) {
-    toast.error('Введите название агента')
+    toast.error(t('agentEditor.nameRequired'))
     return
   }
   saving.value = true
@@ -326,14 +328,14 @@ async function save() {
   try {
     if (isEdit.value && agentId.value) {
       await api.put(`/agents/${agentId.value}`, payload)
-      toast.success('Агент обновлён')
+      toast.success(t('agentEditor.agentUpdated'))
     } else {
       await api.post('/agents', payload)
-      toast.success('Агент создан')
+      toast.success(t('agentEditor.agentCreated'))
     }
     router.push('/admin')
   } catch {
-    toast.error('Не удалось сохранить агента')
+    toast.error(t('agentEditor.saveError'))
   } finally {
     saving.value = false
   }
@@ -368,7 +370,7 @@ onMounted(async () => {
         memory_scope: data.memory_scope || 'personal',
       }
     } catch {
-      toast.error('Не удалось загрузить агента')
+      toast.error(t('agentEditor.loadError'))
     } finally {
       loading.value = false
     }
@@ -383,9 +385,9 @@ onMounted(async () => {
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
       <div>
         <h1 class="font-heading text-2xl sm:text-[32px] font-medium text-text-primary tracking-tight">
-          {{ isEdit ? 'Редактирование агента' : 'Создание агента' }}
+          {{ isEdit ? $t('agentEditor.editTitle') : $t('agentEditor.createTitle') }}
         </h1>
-        <p class="text-sm text-text-secondary mt-1">Настройте параметры нового AI-агента</p>
+        <p class="text-sm text-text-secondary mt-1">{{ $t('agentEditor.subtitle') }}</p>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <button
@@ -393,7 +395,7 @@ onMounted(async () => {
           :disabled="saving"
           @click="cancel"
         >
-          Отменить
+          {{ $t('common.cancel') }}
         </button>
         <button
           class="flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium font-heading bg-brand text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
@@ -402,7 +404,7 @@ onMounted(async () => {
         >
           <Loader2 v-if="saving" :size="16" class="animate-spin" />
           <Save v-else :size="16" />
-          Сохранить
+          {{ $t('common.save') }}
         </button>
       </div>
     </div>
@@ -428,7 +430,7 @@ onMounted(async () => {
       <!-- Left column -->
       <div class="flex-1 flex flex-col gap-5">
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Название агента</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('agentEditor.agentName') }}</label>
           <input
             v-model="form.name"
             placeholder="Frontend Dev Agent"
@@ -437,7 +439,7 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Описание</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('common.description') }}</label>
           <textarea
             v-model="form.description"
             rows="3"
@@ -447,7 +449,7 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Модель</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('common.model') }}</label>
           <div class="relative">
             <select
               v-model="form.model"
@@ -462,7 +464,7 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Категория</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('agentEditor.category') }}</label>
           <div class="relative">
             <select
               v-model="form.category"
@@ -478,7 +480,7 @@ onMounted(async () => {
         <div class="flex gap-4">
           <!-- Icon picker -->
           <div class="flex-1 flex flex-col gap-1.5 relative" data-picker="icon">
-            <label class="text-[13px] font-medium text-text-primary">Иконка</label>
+            <label class="text-[13px] font-medium text-text-primary">{{ $t('common.icon') }}</label>
             <button
               class="w-full px-4 py-3 border border-border rounded-lg text-sm flex items-center gap-3 hover:border-text-secondary transition-colors"
               @click="showIconPicker = !showIconPicker"
@@ -513,7 +515,7 @@ onMounted(async () => {
 
           <!-- Color picker -->
           <div class="flex-1 flex flex-col gap-1.5 relative" data-picker="color">
-            <label class="text-[13px] font-medium text-text-primary">Цвет</label>
+            <label class="text-[13px] font-medium text-text-primary">{{ $t('common.color') }}</label>
             <button
               class="w-full px-4 py-3 border border-border rounded-lg text-sm flex items-center gap-3 hover:border-text-secondary transition-colors"
               @click="showColorPicker = !showColorPicker"
@@ -556,7 +558,7 @@ onMounted(async () => {
       <!-- Right column -->
       <div class="flex-1 flex flex-col gap-5">
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Системный промпт</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('agentEditor.systemPrompt') }}</label>
           <textarea
             v-model="form.system_prompt"
             rows="6"
@@ -568,14 +570,14 @@ onMounted(async () => {
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <label class="text-[13px] font-medium text-text-primary">
-              Доступные инструменты
+              {{ $t('agentEditor.availableTools') }}
               <span v-if="form.tools.length > 0" class="text-text-muted font-normal">({{ form.tools.length }})</span>
             </label>
             <button
               class="text-[11px] text-brand hover:underline"
               @click="showToolPicker = !showToolPicker"
             >
-              {{ showToolPicker ? 'Свернуть' : 'Выбрать' }}
+              {{ showToolPicker ? $t('common.collapse') : $t('agentEditor.select') }}
             </button>
           </div>
 
@@ -668,7 +670,7 @@ onMounted(async () => {
           <div class="flex items-center gap-1 border border-border rounded-md px-2.5 py-1 w-fit">
             <input
               v-model="newTool"
-              placeholder="+ кастомный инструмент"
+              :placeholder="$t('agentEditor.customTool')"
               class="bg-transparent text-xs text-text-primary outline-none w-40"
               @keydown="handleToolKeydown"
             />
@@ -679,7 +681,7 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Доступ (роли)</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('agentEditor.accessRoles') }}</label>
           <div class="relative">
             <input
               v-model="form.allowed_roles"
@@ -691,7 +693,7 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-text-primary">Лимит токенов за сессию</label>
+          <label class="text-[13px] font-medium text-text-primary">{{ $t('agentEditor.tokenLimit') }}</label>
           <input
             v-model.number="form.max_tokens_per_session"
             type="number"
@@ -711,7 +713,7 @@ onMounted(async () => {
                   <path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/>
                 </svg>
               </div>
-              <span class="text-[13px] font-medium text-text-primary">Память агента</span>
+              <span class="text-[13px] font-medium text-text-primary">{{ $t('agentEditor.agentMemory') }}</span>
             </div>
             <button
               class="relative w-10 h-5 rounded-full transition-colors"
@@ -725,7 +727,7 @@ onMounted(async () => {
             </button>
           </div>
           <p class="text-[11px] text-text-secondary leading-relaxed">
-            Агент сохраняет знания между сессиями — контекст, решения, паттерны
+            {{ $t('agentEditor.memoryDescription') }}
           </p>
           <div v-if="form.memory_enabled" class="flex gap-3">
             <label
@@ -733,14 +735,14 @@ onMounted(async () => {
               :class="form.memory_scope === 'personal' ? 'border-brand bg-brand/5 text-brand' : 'border-border text-text-secondary'"
             >
               <input v-model="form.memory_scope" type="radio" value="personal" class="hidden" />
-              Персональная
+              {{ $t('common.personal') }}
             </label>
             <label
               class="flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer text-xs transition-colors"
               :class="form.memory_scope === 'shared' ? 'border-brand bg-brand/5 text-brand' : 'border-border text-text-secondary'"
             >
               <input v-model="form.memory_scope" type="radio" value="shared" class="hidden" />
-              Общая для всех
+              {{ $t('common.shared') }}
             </label>
           </div>
         </div>

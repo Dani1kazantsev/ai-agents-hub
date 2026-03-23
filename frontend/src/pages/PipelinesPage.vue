@@ -6,11 +6,13 @@ import {
   Loader, Server, Smartphone, CheckCircle, XCircle, X, Users, MessageSquare,
   Pencil, Trash2,
 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 import { api } from '@/lib/api'
 import { useToast } from '@/composables/useToast'
 import { usePipelinesStore } from '@/stores/pipelines'
 import type { PipelineTemplate } from '@/stores/pipelines'
 
+const { t } = useI18n()
 const router = useRouter()
 const toast = useToast()
 const store = usePipelinesStore()
@@ -41,9 +43,9 @@ async function deleteTemplate(templateId: string) {
   deleting.value = true
   try {
     await store.deleteTemplate(templateId)
-    toast.success('Пайплайн удалён')
+    toast.success(t('pipelines.pipelineDeleted'))
   } catch {
-    toast.error('Не удалось удалить пайплайн')
+    toast.error(t('pipelines.pipelineDeleteError'))
   } finally {
     deleting.value = false
     deleteConfirm.value = null
@@ -71,7 +73,7 @@ async function startRun() {
     const resp = await api.post<any>(`/pipelines/run/${templateId}`, { input })
 
     if (resp.mode === 'human_loop') {
-      toast.success(`Чат с оркестратором создан`)
+      toast.success(t('pipelines.chatCreated'))
       router.push(`/chats/${resp.session_id}`)
       return
     }
@@ -79,16 +81,16 @@ async function startRun() {
     // Auto mode — store manages WS
     store.startAutoRun(templateId, resp.run_id)
   } catch {
-    toast.error('Не удалось запустить пайплайн')
+    toast.error(t('pipelines.runError'))
   }
 }
 
 async function cancelRun(templateId: string) {
   try {
     await store.cancelRun(templateId)
-    toast.success('Пайплайн отменён')
+    toast.success(t('pipelines.cancelled'))
   } catch {
-    toast.error('Не удалось отменить пайплайн')
+    toast.error(t('pipelines.cancelError'))
   }
 }
 
@@ -102,15 +104,15 @@ async function restartRun(template: PipelineTemplate) {
   <div class="p-10 max-w-[1200px]">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
       <div>
-        <h1 class="font-heading text-[32px] font-medium text-text-primary tracking-tight">Пайплайны</h1>
-        <p class="text-sm text-text-secondary mt-1">Цепочки агентов для типовых задач</p>
+        <h1 class="font-heading text-[32px] font-medium text-text-primary tracking-tight">{{ $t('pipelines.title') }}</h1>
+        <p class="text-sm text-text-secondary mt-1">{{ $t('pipelines.subtitle') }}</p>
       </div>
       <button
         class="flex items-center gap-2 bg-brand text-white text-[13px] font-medium font-heading px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity"
         @click="router.push('/pipelines/new')"
       >
         <Plus :size="16" />
-        Создать пайплайн
+        {{ $t('pipelines.createPipeline') }}
       </button>
     </div>
 
@@ -149,14 +151,14 @@ async function restartRun(template: PipelineTemplate) {
                   style="background-color: #5988FF20; color: #5988FF"
                 >
                   <MessageSquare :size="10" />
-                  Чат с TL
+                  {{ $t('pipelines.chatWithTL') }}
                 </span>
                 <span
                   v-else
                   class="text-[10px] px-2 py-0.5 rounded-full font-medium"
                   style="background-color: #10B98120; color: #10B981"
                 >
-                  Авто
+                  {{ $t('pipelines.auto') }}
                 </span>
               </div>
               <p class="text-[13px] text-text-secondary mt-1">{{ template.description }}</p>
@@ -167,14 +169,14 @@ async function restartRun(template: PipelineTemplate) {
             <!-- Edit / Delete -->
             <button
               class="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-lg transition-colors"
-              title="Редактировать"
+              :title="$t('common.edit')"
               @click="router.push(`/pipelines/${template.id}/edit`)"
             >
               <Pencil :size="15" />
             </button>
             <button
               class="p-2 text-text-muted hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors"
-              title="Удалить"
+              :title="$t('common.delete')"
               @click="deleteConfirm = template.id"
             >
               <Trash2 :size="15" />
@@ -192,33 +194,33 @@ async function restartRun(template: PipelineTemplate) {
               @click="cancelRun(template.id)"
             >
               <X :size="14" />
-              Отменить
+              {{ $t('common.cancel') }}
             </button>
           </div>
           <div v-else-if="store.runs[template.id]?.status === 'completed'" class="flex items-center gap-2">
             <div class="flex items-center gap-1.5 text-[#10B981] text-xs font-medium px-3 py-1.5 rounded-lg" style="background-color: #10B98120">
               <CheckCircle :size="14" />
-              Завершён
+              {{ $t('pipelines.done') }}
             </div>
             <button
               class="flex items-center gap-1.5 text-text-secondary text-xs font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-bg-subtle transition-colors"
               @click="restartRun(template)"
             >
               <Play :size="12" />
-              Перезапустить
+              {{ $t('pipelines.restart') }}
             </button>
           </div>
           <div v-else-if="store.runs[template.id]?.status === 'error'" class="flex items-center gap-2">
             <div class="flex items-center gap-1.5 text-[#EF4444] text-xs font-medium px-3 py-1.5 rounded-lg" style="background-color: #EF444420">
               <XCircle :size="14" />
-              Ошибка
+              {{ $t('common.error') }}
             </div>
             <button
               class="flex items-center gap-1.5 text-text-secondary text-xs font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-bg-subtle transition-colors"
               @click="restartRun(template)"
             >
               <Play :size="12" />
-              Перезапустить
+              {{ $t('pipelines.restart') }}
             </button>
           </div>
           <button
@@ -226,7 +228,7 @@ async function restartRun(template: PipelineTemplate) {
             class="flex items-center gap-2 bg-bg-subtle border border-border text-text-primary text-[13px] font-medium font-heading px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
             @click="openRunDialog(template)"
           >
-            {{ template.human_loop ? 'Начать чат' : 'Запустить' }}
+            {{ template.human_loop ? $t('pipelines.startChat') : $t('pipelines.run') }}
             <component :is="template.human_loop ? MessageSquare : Play" :size="14" />
           </button>
         </div>
@@ -266,22 +268,22 @@ async function restartRun(template: PipelineTemplate) {
             class="border border-border rounded-lg p-3"
           >
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-xs font-medium text-text-primary">Шаг {{ i + 1 }}: {{ stepResult.agent }}</span>
+              <span class="text-xs font-medium text-text-primary">{{ $t('pipelines.step', { n: i + 1 }) }}: {{ stepResult.agent }}</span>
               <span
                 v-if="stepResult.status === 'done'"
                 class="text-[10px] px-1.5 py-0.5 rounded"
                 style="background-color: #10B98120; color: #10B981"
-              >готово</span>
+              >{{ $t('pipelines.stepDone') }}</span>
               <span
                 v-else-if="stepResult.status === 'running'"
                 class="text-[10px] px-1.5 py-0.5 rounded"
                 style="background-color: #5988FF20; color: #5988FF"
-              >выполняется</span>
+              >{{ $t('pipelines.running') }}</span>
               <span
                 v-else-if="stepResult.status === 'error'"
                 class="text-[10px] px-1.5 py-0.5 rounded"
                 style="background-color: #EF444420; color: #EF4444"
-              >ошибка</span>
+              >{{ $t('pipelines.stepError') }}</span>
             </div>
             <div
               v-if="stepResult.streamContent || stepResult.output"
@@ -290,20 +292,20 @@ async function restartRun(template: PipelineTemplate) {
               {{ stepResult.streamContent || stepResult.output }}
             </div>
             <div v-else-if="stepResult.status === 'pending'" class="text-xs text-text-muted">
-              Ожидание...
+              {{ $t('pipelines.waiting') }}
             </div>
           </div>
         </div>
       </div>
 
       <div v-if="store.templates.length === 0" class="text-center py-12">
-        <p class="text-sm text-text-secondary mb-4">У вас пока нет пайплайнов</p>
+        <p class="text-sm text-text-secondary mb-4">{{ $t('pipelines.noPipelines') }}</p>
         <button
           class="inline-flex items-center gap-2 bg-brand text-white text-[13px] font-medium font-heading px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity"
           @click="router.push('/pipelines/new')"
         >
           <Plus :size="16" />
-          Добавить пайплайн
+          {{ $t('pipelines.addPipeline') }}
         </button>
       </div>
     </div>
@@ -317,21 +319,21 @@ async function restartRun(template: PipelineTemplate) {
       <div class="bg-bg-card border border-border rounded-xl p-6 w-[500px]">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-heading text-lg font-semibold text-text-primary">
-            {{ inputDialog.humanLoop ? 'Начать чат с Team Lead' : 'Запуск пайплайна' }}
+            {{ inputDialog.humanLoop ? $t('pipelines.startChatWithTL') : $t('pipelines.runPipelineTitle') }}
           </h3>
           <button class="text-text-secondary hover:text-text-primary" @click="inputDialog = null">
             <X :size="18" />
           </button>
         </div>
         <p v-if="inputDialog.humanLoop" class="text-[13px] text-text-secondary mb-3">
-          Откроется чат с AI Team Lead, который будет оркестрировать работу агентов и общаться с вами между шагами.
+          {{ $t('pipelines.chatDescription') }}
         </p>
         <textarea
           v-model="inputDialog.input"
           rows="4"
           :placeholder="inputDialog.humanLoop
-            ? 'Опишите задачу (например: LX-1234, или опишите что нужно сделать)...'
-            : 'Введите входные данные (ссылка на MR, название спринта и т.д.)...'"
+            ? $t('pipelines.chatPlaceholder')
+            : $t('pipelines.inputPlaceholder')"
           class="w-full px-4 py-3 border border-border bg-bg-input text-text-primary rounded-lg text-sm outline-none focus:border-text-secondary transition-colors resize-none"
         />
         <div class="flex justify-end gap-3 mt-4">
@@ -339,14 +341,14 @@ async function restartRun(template: PipelineTemplate) {
             class="px-4 py-2 text-sm text-text-secondary border border-border rounded-lg hover:bg-bg-subtle transition-colors"
             @click="inputDialog = null"
           >
-            Отмена
+            {{ $t('common.cancel') }}
           </button>
           <button
             class="flex items-center gap-2 px-4 py-2 text-sm bg-brand text-white rounded-lg hover:opacity-90 transition-opacity font-heading font-medium"
             @click="startRun"
           >
             <component :is="inputDialog.humanLoop ? MessageSquare : Play" :size="14" />
-            {{ inputDialog.humanLoop ? 'Начать чат' : 'Запустить' }}
+            {{ inputDialog.humanLoop ? $t('pipelines.startChat') : $t('pipelines.run') }}
           </button>
         </div>
       </div>
@@ -359,15 +361,15 @@ async function restartRun(template: PipelineTemplate) {
       @click.self="deleteConfirm = null"
     >
       <div class="bg-bg-card border border-border rounded-xl p-6 w-[400px]">
-        <h3 class="font-heading text-lg font-semibold text-text-primary mb-2">Удалить пайплайн?</h3>
-        <p class="text-[13px] text-text-secondary mb-5">Это действие нельзя отменить. Пайплайн будет удалён навсегда.</p>
+        <h3 class="font-heading text-lg font-semibold text-text-primary mb-2">{{ $t('pipelines.deletePipeline') }}</h3>
+        <p class="text-[13px] text-text-secondary mb-5">{{ $t('pipelines.deletePipelineText') }}</p>
         <div class="flex justify-end gap-3">
           <button
             class="px-4 py-2 text-sm text-text-secondary border border-border rounded-lg hover:bg-bg-subtle transition-colors"
             :disabled="deleting"
             @click="deleteConfirm = null"
           >
-            Отмена
+            {{ $t('common.cancel') }}
           </button>
           <button
             class="flex items-center gap-2 px-4 py-2 text-sm bg-[#EF4444] text-white rounded-lg hover:opacity-90 transition-opacity font-heading font-medium disabled:opacity-50"
@@ -376,7 +378,7 @@ async function restartRun(template: PipelineTemplate) {
           >
             <Loader v-if="deleting" :size="14" class="animate-spin" />
             <Trash2 v-else :size="14" />
-            Удалить
+            {{ $t('common.delete') }}
           </button>
         </div>
       </div>

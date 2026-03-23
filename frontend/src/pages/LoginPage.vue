@@ -3,7 +3,9 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { Zap, Loader2 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 
@@ -30,8 +32,8 @@ async function handleSubmit() {
     }
   } catch (e: any) {
     error.value = isRegister.value
-      ? 'Ошибка регистрации. Возможно, email или username уже заняты.'
-      : 'Неверный логин или пароль'
+      ? t('auth.registerError')
+      : t('auth.invalidCredentials')
   } finally {
     loading.value = false
   }
@@ -52,13 +54,13 @@ function toggleMode() {
         </div>
         <h1 class="font-heading text-2xl font-semibold text-text-primary">Agent Hub</h1>
         <p class="text-sm text-text-secondary mt-1">
-          {{ isRegister ? 'Создайте аккаунт' : 'Войдите в свой аккаунт' }}
+          {{ isRegister ? $t('auth.registerTitle') : $t('auth.loginTitle') }}
         </p>
       </div>
 
       <form @submit.prevent="handleSubmit" class="bg-bg-main rounded-2xl border border-border p-6 space-y-4">
         <div v-if="isRegister">
-          <label class="block text-sm font-medium text-text-primary mb-1.5">Email</label>
+          <label class="block text-sm font-medium text-text-primary mb-1.5">{{ $t('auth.email') }}</label>
           <input
             v-model="email"
             type="email"
@@ -71,7 +73,7 @@ function toggleMode() {
 
         <div>
           <label class="block text-sm font-medium text-text-primary mb-1.5">
-            {{ isRegister ? 'Username' : 'Логин' }}
+            {{ isRegister ? $t('auth.username') : $t('auth.username') }}
           </label>
           <input
             v-model="username"
@@ -84,7 +86,7 @@ function toggleMode() {
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-text-primary mb-1.5">Пароль</label>
+          <label class="block text-sm font-medium text-text-primary mb-1.5">{{ $t('auth.password') }}</label>
           <input
             v-model="password"
             type="password"
@@ -103,13 +105,13 @@ function toggleMode() {
           class="w-full py-2.5 rounded-lg bg-brand text-white text-sm font-medium font-heading transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Loader2 v-if="loading" :size="16" class="animate-spin" />
-          {{ isRegister ? 'Зарегистрироваться' : 'Войти' }}
+          {{ isRegister ? $t('auth.register') : $t('auth.login') }}
         </button>
 
         <p class="text-center text-sm text-text-secondary">
-          {{ isRegister ? 'Уже есть аккаунт?' : 'Нет аккаунта?' }}
+          {{ isRegister ? $t('auth.hasAccount') : $t('auth.noAccount') }}
           <button type="button" @click="toggleMode" class="text-brand hover:underline ml-1">
-            {{ isRegister ? 'Войти' : 'Зарегистрироваться' }}
+            {{ isRegister ? $t('auth.login') : $t('auth.register') }}
           </button>
         </p>
       </form>

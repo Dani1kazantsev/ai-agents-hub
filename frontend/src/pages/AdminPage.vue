@@ -8,7 +8,9 @@ import {
 } from 'lucide-vue-next'
 import { api } from '@/lib/api'
 import { useToast } from '@/composables/useToast'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const toast = useToast()
 
@@ -184,10 +186,10 @@ async function saveAgent() {
 async function toggleActive(agent: AdminAgent) {
   try {
     await api.put(`/agents/${agent.id}`, { is_active: !agent.is_active })
-    toast.success(agent.is_active ? 'Агент деактивирован' : 'Агент активирован')
+    toast.success(agent.is_active ? t('admin.agentDeactivated') : t('admin.agentActivated'))
     await loadData()
   } catch {
-    toast.error('Не удалось изменить статус агента')
+    toast.error(t('admin.statusChangeError'))
   }
 }
 
@@ -195,10 +197,10 @@ async function deleteAgent(id: string) {
   try {
     await api.delete(`/agents/${id}`)
     deleteConfirm.value = null
-    toast.success('Агент удалён')
+    toast.success(t('admin.agentDeleted'))
     await loadData()
   } catch {
-    toast.error('Не удалось удалить агента')
+    toast.error(t('admin.agentDeleteError'))
   }
 }
 
@@ -262,45 +264,45 @@ onUnmounted(() => {
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
       <div>
-        <h1 class="font-heading text-[32px] font-medium text-text-primary tracking-tight">Админка</h1>
-        <p class="text-sm text-text-secondary mt-1">Управление агентами, аналитика и бюджеты</p>
+        <h1 class="font-heading text-[32px] font-medium text-text-primary tracking-tight">{{ $t('admin.title') }}</h1>
+        <p class="text-sm text-text-secondary mt-1">{{ $t('admin.subtitle') }}</p>
       </div>
       <button
         class="flex items-center gap-2 bg-brand text-white text-[13px] font-medium font-heading px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity"
         @click="router.push('/admin/agents/new')"
       >
         <Plus :size="16" />
-        Создать агента
+        {{ $t('admin.createAgent') }}
       </button>
     </div>
 
     <!-- Metrics -->
     <div class="grid grid-cols-4 gap-5 mb-8">
       <div class="border border-border rounded-xl p-6">
-        <p class="text-[13px] text-text-secondary">Всего сессий</p>
+        <p class="text-[13px] text-text-secondary">{{ $t('admin.totalSessions') }}</p>
         <p class="font-heading text-4xl font-semibold text-text-primary tracking-tight mt-1">
           {{ stats.total_sessions.toLocaleString() }}
         </p>
       </div>
 
       <div class="border border-border rounded-xl p-6">
-        <p class="text-[13px] text-text-secondary">Токенов (Claude CLI)</p>
+        <p class="text-[13px] text-text-secondary">{{ $t('admin.tokensClaude') }}</p>
         <p class="font-heading text-4xl font-semibold text-text-primary tracking-tight mt-1">
           {{ formatTokens(getTotalClaudeTokens()) }}
         </p>
-        <p class="text-xs text-text-secondary mt-1">{{ getTotalClaudeMessages().toLocaleString() }} сообщений всего</p>
+        <p class="text-xs text-text-secondary mt-1">{{ $t('admin.messagesTotal', { count: getTotalClaudeMessages().toLocaleString() }) }}</p>
       </div>
 
       <div class="border border-border rounded-xl p-6">
-        <p class="text-[13px] text-text-secondary">Активных агентов</p>
+        <p class="text-[13px] text-text-secondary">{{ $t('admin.activeAgents') }}</p>
         <p class="font-heading text-4xl font-semibold text-text-primary tracking-tight mt-1">
           {{ stats.active_agents }}
         </p>
-        <p class="text-xs text-text-secondary mt-1">из {{ stats.total_agents }} всего</p>
+        <p class="text-xs text-text-secondary mt-1">{{ $t('admin.ofTotal', { count: stats.total_agents }) }}</p>
       </div>
 
       <div class="border border-border rounded-xl p-6">
-        <p class="text-[13px] text-text-secondary">Активных пользователей</p>
+        <p class="text-[13px] text-text-secondary">{{ $t('admin.activeUsers') }}</p>
         <p class="font-heading text-4xl font-semibold text-text-primary tracking-tight mt-1">
           {{ stats.active_users }}
         </p>
@@ -320,22 +322,22 @@ onUnmounted(() => {
               class="px-3 py-1.5 transition-colors cursor-pointer"
               :class="usagePeriod === 'today' ? 'bg-brand text-white' : 'text-text-secondary hover:bg-bg-subtle'"
               @click="usagePeriod = 'today'"
-            >Сегодня</button>
+            >{{ $t('admin.today') }}</button>
             <button
               class="px-3 py-1.5 transition-colors border-l border-border cursor-pointer"
               :class="usagePeriod === 'week' ? 'bg-brand text-white' : 'text-text-secondary hover:bg-bg-subtle'"
               @click="usagePeriod = 'week'"
-            >Неделя</button>
+            >{{ $t('admin.week') }}</button>
           </div>
           <span
             v-if="claudeUsage.some(u => u.live_today)"
             class="text-[10px] font-medium px-1.5 py-0.5 rounded"
             style="background-color: #10B98120; color: #10B981"
-            title="Данные за сегодня получены из session-файлов в реальном времени"
+            :title="$t('admin.realtimeTooltip')"
           >LIVE</span>
           <button
             class="text-text-muted hover:text-text-primary transition-colors p-1 cursor-pointer"
-            title="Обновить"
+            :title="$t('admin.refresh')"
             @click="loadUsage"
           >
             <RefreshCw :size="16" :class="{ 'animate-spin': usageLoading }" />
@@ -345,12 +347,12 @@ onUnmounted(() => {
 
       <div class="border border-border rounded-xl overflow-hidden">
         <div class="flex items-center bg-bg-subtle px-5 py-3">
-          <div class="w-[200px] text-xs font-semibold font-heading text-text-secondary">Пользователь</div>
+          <div class="w-[200px] text-xs font-semibold font-heading text-text-secondary">{{ $t('admin.user') }}</div>
           <div class="w-[80px] text-xs font-semibold font-heading text-text-secondary">Claude</div>
-          <div class="w-[120px] text-xs font-semibold font-heading text-text-secondary">Токенов</div>
-          <div class="w-[100px] text-xs font-semibold font-heading text-text-secondary">Сообщений</div>
-          <div class="w-[100px] text-xs font-semibold font-heading text-text-secondary">Сессий</div>
-          <div class="flex-1 text-xs font-semibold font-heading text-text-secondary">Модели</div>
+          <div class="w-[120px] text-xs font-semibold font-heading text-text-secondary">{{ $t('admin.tokens') }}</div>
+          <div class="w-[100px] text-xs font-semibold font-heading text-text-secondary">{{ $t('admin.messages') }}</div>
+          <div class="w-[100px] text-xs font-semibold font-heading text-text-secondary">{{ $t('admin.sessions') }}</div>
+          <div class="flex-1 text-xs font-semibold font-heading text-text-secondary">{{ $t('admin.models') }}</div>
         </div>
 
         <template v-if="usageLoading && claudeUsage.length === 0">
@@ -381,7 +383,7 @@ onUnmounted(() => {
                 color: u.claude_authenticated ? '#10B981' : '#EF4444',
               }"
             >
-              {{ u.claude_authenticated ? 'Подключен' : 'Нет' }}
+              {{ u.claude_authenticated ? $t('admin.connected') : $t('common.no') }}
             </span>
           </div>
           <div class="w-[120px] text-sm text-text-primary font-mono">
@@ -407,7 +409,7 @@ onUnmounted(() => {
         </div>
 
         <div v-if="claudeUsage.length === 0 && !usageLoading" class="px-5 py-8 text-center text-sm text-text-secondary border-t border-border">
-          Нет данных. Пользователям необходимо подключить Claude аккаунт.
+          {{ $t('admin.noData') }}
         </div>
       </div>
     </div>
@@ -415,12 +417,12 @@ onUnmounted(() => {
     <!-- Agents Table -->
     <div class="border border-border rounded-xl overflow-hidden">
       <div class="flex items-center bg-bg-subtle px-5 py-3.5">
-        <div class="w-[240px] text-xs font-semibold font-heading text-text-secondary">Агент</div>
-        <div class="w-[120px] text-xs font-semibold font-heading text-text-secondary">Модель</div>
-        <div class="w-[100px] text-xs font-semibold font-heading text-text-secondary">Сессий</div>
-        <div class="flex-1 text-xs font-semibold font-heading text-text-secondary">Токенов</div>
-        <div class="w-[100px] text-xs font-semibold font-heading text-text-secondary">Статус</div>
-        <div class="w-[120px] text-xs font-semibold font-heading text-text-secondary">Действия</div>
+        <div class="w-[240px] text-xs font-semibold font-heading text-text-secondary">{{ $t('common.agent') }}</div>
+        <div class="w-[120px] text-xs font-semibold font-heading text-text-secondary">{{ $t('common.model') }}</div>
+        <div class="w-[100px] text-xs font-semibold font-heading text-text-secondary">{{ $t('admin.sessions') }}</div>
+        <div class="flex-1 text-xs font-semibold font-heading text-text-secondary">{{ $t('admin.tokens') }}</div>
+        <div class="w-[100px] text-xs font-semibold font-heading text-text-secondary">{{ $t('common.status') }}</div>
+        <div class="w-[120px] text-xs font-semibold font-heading text-text-secondary">{{ $t('common.actions') }}</div>
       </div>
 
       <div
@@ -446,7 +448,7 @@ onUnmounted(() => {
             :style="{ backgroundColor: agent.is_active ? '#10B98120' : '#EF444420', color: agent.is_active ? '#10B981' : '#EF4444' }"
             @click="toggleActive(agent)"
           >
-            {{ agent.is_active ? 'Активен' : 'Неактивен' }}
+            {{ agent.is_active ? $t('common.active') : $t('common.inactive') }}
           </button>
         </div>
         <div class="w-[120px] flex items-center gap-2">
@@ -483,7 +485,7 @@ onUnmounted(() => {
       </template>
 
       <div v-if="agents.length === 0 && !loading" class="px-5 py-8 text-center text-sm text-text-secondary">
-        Нет агентов
+        {{ $t('admin.noAgents') }}
       </div>
     </div>
 
@@ -496,7 +498,7 @@ onUnmounted(() => {
       <div class="bg-bg-card border border-border rounded-xl p-6 w-[600px] max-h-[85vh] overflow-auto">
         <div class="flex items-center justify-between mb-5">
           <h3 class="font-heading text-lg font-semibold text-text-primary">
-            {{ isNewAgent ? 'Создать агента' : 'Редактировать агента' }}
+            {{ isNewAgent ? $t('admin.createAgent') : $t('admin.editAgent') }}
           </h3>
           <button class="text-text-secondary hover:text-text-primary" @click="editDialog = null">
             <X :size="18" />
@@ -505,7 +507,7 @@ onUnmounted(() => {
 
         <div class="flex flex-col gap-4">
           <div>
-            <label class="text-xs font-medium text-text-secondary mb-1 block">Название</label>
+            <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('common.name') }}</label>
             <input
               v-model="editDialog.name"
               class="w-full px-3 py-2 border border-border bg-bg-input text-text-primary rounded-lg text-sm outline-none focus:border-text-secondary"
@@ -513,7 +515,7 @@ onUnmounted(() => {
           </div>
 
           <div>
-            <label class="text-xs font-medium text-text-secondary mb-1 block">Описание</label>
+            <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('common.description') }}</label>
             <input
               v-model="editDialog.description"
               class="w-full px-3 py-2 border border-border bg-bg-input text-text-primary rounded-lg text-sm outline-none focus:border-text-secondary"
@@ -522,7 +524,7 @@ onUnmounted(() => {
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-xs font-medium text-text-secondary mb-1 block">Модель</label>
+              <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('common.model') }}</label>
               <select
                 v-model="editDialog.model"
                 class="w-full px-3 py-2 border border-border bg-bg-input text-text-primary rounded-lg text-sm outline-none"
@@ -533,7 +535,7 @@ onUnmounted(() => {
               </select>
             </div>
             <div>
-              <label class="text-xs font-medium text-text-secondary mb-1 block">Макс токенов/сессия</label>
+              <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('admin.maxTokens') }}</label>
               <input
                 v-model.number="editDialog.max_tokens_per_session"
                 type="number"
@@ -543,7 +545,7 @@ onUnmounted(() => {
           </div>
 
           <div>
-            <label class="text-xs font-medium text-text-secondary mb-1 block">System prompt</label>
+            <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('agentEditor.systemPrompt') }}</label>
             <textarea
               v-model="editDialog.system_prompt"
               rows="4"
@@ -552,7 +554,7 @@ onUnmounted(() => {
           </div>
 
           <div>
-            <label class="text-xs font-medium text-text-secondary mb-1 block">Tools (через запятую)</label>
+            <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('admin.toolsComma') }}</label>
             <input
               v-model="editDialog.tools"
               placeholder="jira:search_issues, gitlab:read_file"
@@ -562,7 +564,7 @@ onUnmounted(() => {
 
           <div class="grid grid-cols-3 gap-4">
             <div>
-              <label class="text-xs font-medium text-text-secondary mb-1 block">Иконка</label>
+              <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('common.icon') }}</label>
               <select
                 v-model="editDialog.icon"
                 class="w-full px-3 py-2 border border-border bg-bg-input text-text-primary rounded-lg text-sm outline-none"
@@ -578,7 +580,7 @@ onUnmounted(() => {
               </select>
             </div>
             <div>
-              <label class="text-xs font-medium text-text-secondary mb-1 block">Цвет</label>
+              <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('common.color') }}</label>
               <input
                 v-model="editDialog.color"
                 type="color"
@@ -586,7 +588,7 @@ onUnmounted(() => {
               />
             </div>
             <div>
-              <label class="text-xs font-medium text-text-secondary mb-1 block">Теги</label>
+              <label class="text-xs font-medium text-text-secondary mb-1 block">{{ $t('common.tags') }}</label>
               <input
                 v-model="editDialog.tags"
                 placeholder="dev, backend"
@@ -603,7 +605,7 @@ onUnmounted(() => {
                 :class="editDialog.is_active ? 'text-[#10B981]' : 'text-text-muted'"
               />
             </button>
-            <span class="text-sm text-text-primary">{{ editDialog.is_active ? 'Активен' : 'Неактивен' }}</span>
+            <span class="text-sm text-text-primary">{{ editDialog.is_active ? $t('common.active') : $t('common.inactive') }}</span>
           </div>
         </div>
 
@@ -612,14 +614,14 @@ onUnmounted(() => {
             class="px-4 py-2 text-sm text-text-secondary border border-border rounded-lg hover:bg-bg-subtle transition-colors"
             @click="editDialog = null"
           >
-            Отмена
+            {{ $t('common.cancel') }}
           </button>
           <button
             class="flex items-center gap-2 px-4 py-2 text-sm bg-brand text-white rounded-lg hover:opacity-90 transition-opacity font-heading font-medium"
             @click="saveAgent"
           >
             <Save :size="14" />
-            {{ isNewAgent ? 'Создать' : 'Сохранить' }}
+            {{ isNewAgent ? $t('common.create') : $t('common.save') }}
           </button>
         </div>
       </div>
@@ -632,20 +634,20 @@ onUnmounted(() => {
       @click.self="deleteConfirm = null"
     >
       <div class="bg-bg-card border border-border rounded-xl p-6 w-[400px]">
-        <h3 class="font-heading text-lg font-semibold text-text-primary mb-2">Удалить агента?</h3>
-        <p class="text-sm text-text-secondary mb-6">Это действие необратимо. Все сессии с этим агентом будут сохранены, но агент станет недоступен.</p>
+        <h3 class="font-heading text-lg font-semibold text-text-primary mb-2">{{ $t('admin.deleteAgent') }}</h3>
+        <p class="text-sm text-text-secondary mb-6">{{ $t('admin.deleteAgentText') }}</p>
         <div class="flex justify-end gap-3">
           <button
             class="px-4 py-2 text-sm text-text-secondary border border-border rounded-lg hover:bg-bg-subtle transition-colors"
             @click="deleteConfirm = null"
           >
-            Отмена
+            {{ $t('common.cancel') }}
           </button>
           <button
             class="px-4 py-2 text-sm bg-[#EF4444] text-white rounded-lg hover:opacity-90 transition-opacity font-heading font-medium"
             @click="deleteAgent(deleteConfirm!)"
           >
-            Удалить
+            {{ $t('common.delete') }}
           </button>
         </div>
       </div>

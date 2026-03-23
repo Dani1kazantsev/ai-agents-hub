@@ -6,7 +6,9 @@ import {
 } from 'lucide-vue-next'
 import { useMemoryStore } from '@/stores/memory'
 import { useToast } from '@/composables/useToast'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const memoryStore = useMemoryStore()
@@ -45,11 +47,11 @@ async function saveEntry() {
   try {
     const tags = editingEntry.value.tags.split(',').map(t => t.trim()).filter(Boolean)
     await memoryStore.updateEntry(agentId.value, editingEntry.value.key, editingEntry.value.content, tags)
-    toast.success('Запись обновлена')
+    toast.success(t('memory.entryUpdated'))
     editingEntry.value = null
     await loadData()
   } catch {
-    toast.error('Не удалось сохранить')
+    toast.error(t('memory.saveError'))
   } finally {
     saving.value = false
   }
@@ -58,11 +60,11 @@ async function saveEntry() {
 async function deleteEntry(key: string) {
   try {
     await memoryStore.deleteEntry(agentId.value, key)
-    toast.success('Запись удалена')
+    toast.success(t('memory.entryDeleted'))
     if (editingEntry.value?.key === key) editingEntry.value = null
     await memoryStore.fetchStats(agentId.value)
   } catch {
-    toast.error('Не удалось удалить')
+    toast.error(t('memory.deleteError'))
   }
 }
 
@@ -94,9 +96,9 @@ onMounted(async () => {
         <Brain :size="24" class="text-brand" />
         <div>
           <h1 class="font-heading text-2xl font-medium text-text-primary tracking-tight">
-            Память агента
+            {{ $t('memory.title') }}
           </h1>
-          <p class="text-sm text-text-secondary mt-0.5">Знания, накопленные агентом между сессиями</p>
+          <p class="text-sm text-text-secondary mt-0.5">{{ $t('memory.subtitle') }}</p>
         </div>
       </div>
     </div>
@@ -104,15 +106,15 @@ onMounted(async () => {
     <!-- Stats cards -->
     <div class="grid grid-cols-3 gap-4 mb-6">
       <div class="bg-bg-subtle border border-border rounded-xl p-4">
-        <div class="text-xs text-text-secondary mb-1">Записей</div>
+        <div class="text-xs text-text-secondary mb-1">{{ $t('memory.entries') }}</div>
         <div class="text-2xl font-heading font-semibold text-text-primary">{{ memoryStore.stats.total_entries }}</div>
       </div>
       <div class="bg-bg-subtle border border-border rounded-xl p-4">
-        <div class="text-xs text-text-secondary mb-1">Токенов</div>
+        <div class="text-xs text-text-secondary mb-1">{{ $t('memory.tokens') }}</div>
         <div class="text-2xl font-heading font-semibold text-text-primary">{{ memoryStore.stats.total_tokens.toLocaleString() }}</div>
       </div>
       <div class="bg-bg-subtle border border-border rounded-xl p-4">
-        <div class="text-xs text-text-secondary mb-1">Ключей</div>
+        <div class="text-xs text-text-secondary mb-1">{{ $t('memory.keys') }}</div>
         <div class="text-2xl font-heading font-semibold text-text-primary">{{ memoryStore.stats.keys.length }}</div>
       </div>
     </div>
@@ -123,7 +125,7 @@ onMounted(async () => {
         <Search :size="16" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" />
         <input
           v-model="searchQuery"
-          placeholder="Поиск по памяти..."
+          :placeholder="$t('memory.searchPlaceholder')"
           class="w-full pl-10 pr-4 py-2.5 border border-border bg-transparent text-text-primary rounded-lg text-sm outline-none focus:border-text-secondary transition-colors"
           @keydown.enter="handleSearch"
         />
@@ -132,7 +134,7 @@ onMounted(async () => {
         class="px-4 py-2.5 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         @click="handleSearch"
       >
-        Найти
+        {{ $t('common.find') }}
       </button>
     </div>
 
@@ -145,8 +147,8 @@ onMounted(async () => {
 
         <div v-else-if="memoryStore.entries.length === 0" class="text-center py-12">
           <Database :size="48" class="mx-auto text-text-muted mb-4" />
-          <p class="text-sm text-text-secondary">Пока нет записей в памяти</p>
-          <p class="text-xs text-text-muted mt-1">Начните диалог с агентом — он будет сохранять знания</p>
+          <p class="text-sm text-text-secondary">{{ $t('memory.noEntries') }}</p>
+          <p class="text-xs text-text-muted mt-1">{{ $t('memory.noEntriesHelp') }}</p>
         </div>
 
         <div v-else class="flex flex-col gap-2">
@@ -166,13 +168,13 @@ onMounted(async () => {
                     class="text-[10px] px-1.5 py-0.5 rounded-full"
                     :class="entry.scope === 'shared' ? 'bg-green-500/10 text-green-600' : 'bg-blue-500/10 text-blue-600'"
                   >
-                    {{ entry.scope === 'shared' ? 'общая' : 'личная' }}
+                    {{ entry.scope === 'shared' ? $t('memory.scopeShared') : $t('memory.scopePersonal') }}
                   </span>
                 </div>
                 <p class="text-xs text-text-secondary line-clamp-2">{{ truncate(entry.content, 200) }}</p>
                 <div class="flex items-center gap-3 mt-2">
                   <span class="text-[10px] text-text-muted">{{ formatDate(entry.updated_at) }}</span>
-                  <span class="text-[10px] text-text-muted">{{ entry.token_count }} токенов</span>
+                  <span class="text-[10px] text-text-muted">{{ entry.token_count }} {{ $t('memory.tokens').toLowerCase() }}</span>
                   <div v-if="entry.tags && entry.tags.length" class="flex gap-1">
                     <span
                       v-for="tag in entry.tags.slice(0, 3)"
@@ -199,7 +201,7 @@ onMounted(async () => {
       <div v-if="editingEntry" class="w-[400px] shrink-0">
         <div class="border border-border rounded-xl p-5 sticky top-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="font-heading text-sm font-medium text-text-primary">Редактирование</h3>
+            <h3 class="font-heading text-sm font-medium text-text-primary">{{ $t('memory.editing') }}</h3>
             <button
               class="p-1 rounded text-text-muted hover:text-text-primary"
               @click="editingEntry = null"
@@ -210,14 +212,14 @@ onMounted(async () => {
 
           <div class="flex flex-col gap-4">
             <div>
-              <label class="text-[11px] font-medium text-text-secondary mb-1 block">Ключ</label>
+              <label class="text-[11px] font-medium text-text-secondary mb-1 block">{{ $t('memory.key') }}</label>
               <div class="font-mono text-sm text-text-primary bg-bg-subtle rounded-lg px-3 py-2">
                 {{ editingEntry.key }}
               </div>
             </div>
 
             <div>
-              <label class="text-[11px] font-medium text-text-secondary mb-1 block">Содержимое</label>
+              <label class="text-[11px] font-medium text-text-secondary mb-1 block">{{ $t('memory.content') }}</label>
               <textarea
                 v-model="editingEntry.content"
                 rows="12"
@@ -226,7 +228,7 @@ onMounted(async () => {
             </div>
 
             <div>
-              <label class="text-[11px] font-medium text-text-secondary mb-1 block">Теги (через запятую)</label>
+              <label class="text-[11px] font-medium text-text-secondary mb-1 block">{{ $t('memory.tagsComma') }}</label>
               <input
                 v-model="editingEntry.tags"
                 class="w-full px-3 py-2 border border-border bg-transparent text-text-primary rounded-lg text-sm outline-none focus:border-text-secondary"
@@ -241,7 +243,7 @@ onMounted(async () => {
             >
               <Loader2 v-if="saving" :size="14" class="animate-spin" />
               <Save v-else :size="14" />
-              Сохранить
+              {{ $t('common.save') }}
             </button>
           </div>
         </div>

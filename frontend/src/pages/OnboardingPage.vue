@@ -8,7 +8,9 @@ import {
   Zap, ArrowRight, ArrowLeft, Loader2, Check, ShieldCheck,
   ExternalLink, Sparkles, Play, Users, SkipForward, Plus, X,
 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const toast = useToast()
@@ -52,15 +54,15 @@ function startClaudeAuth() {
       if (data.success) {
         claudeStatus.value = 'connected'
         auth.claudeAuthenticated = true
-        toast.success('Claude аккаунт подключен!')
+        toast.success(t('claudeAuth.connectSuccess'))
         setTimeout(() => { step.value = 1 }, 800)
       } else {
         claudeStatus.value = 'not_connected'
-        toast.error('Не удалось подключить аккаунт')
+        toast.error(t('claudeAuth.connectError'))
       }
     } else if (data.type === 'error') {
       claudeStatus.value = 'not_connected'
-      toast.error(data.content || 'Ошибка подключения')
+      toast.error(data.content || t('claudeAuth.connectionError'))
     }
   }
 
@@ -112,7 +114,7 @@ const completing = ref(false)
 
 async function submitDescription() {
   if (!userDescription.value.trim()) {
-    toast.error('Опишите ваши задачи')
+    toast.error(t('onboarding.describeError'))
     return
   }
   step.value = 2
@@ -134,7 +136,7 @@ async function submitDescription() {
 
     step.value = 3
   } catch {
-    toast.error('Ошибка при анализе. Попробуйте ещё раз.')
+    toast.error(t('onboarding.analyzeError'))
     step.value = 1
   } finally {
     suggesting.value = false
@@ -191,7 +193,7 @@ async function completeOnboarding() {
       router.push('/pipelines')
     }, 2000)
   } catch {
-    toast.error('Ошибка при сохранении')
+    toast.error(t('onboarding.saveError'))
   } finally {
     completing.value = false
   }
@@ -203,11 +205,11 @@ async function skipOnboarding() {
     await auth.fetchUser()
     router.push('/catalog')
   } catch {
-    toast.error('Ошибка')
+    toast.error(t('common.error'))
   }
 }
 
-const stepLabels = ['Подключение', 'Ваши задачи', 'Подбор', 'Пайплайны']
+const stepLabels = computed(() => t('onboarding.steps') as unknown as string[])
 
 function getStepStatus(idx: number) {
   if (step.value > idx || (step.value === idx && idx === 3)) return 'active'
@@ -246,7 +248,7 @@ checkClaudeStatus()
       <button @click="skipOnboarding"
               class="text-sm text-text-muted hover:text-text-secondary transition-colors flex items-center gap-1">
         <SkipForward :size="14" />
-        Пропустить
+        {{ $t('common.skip') }}
       </button>
     </header>
 
@@ -283,10 +285,10 @@ checkClaudeStatus()
               <ShieldCheck class="w-8 h-8 text-brand" />
             </div>
             <h1 class="font-heading text-2xl font-bold text-text-primary">
-              Добро пожаловать в Agent Hub!
+              {{ $t('onboarding.welcome') }}
             </h1>
             <p class="text-text-secondary mt-2 max-w-md mx-auto">
-              Для начала подключите ваш Claude Team аккаунт — он нужен для работы AI-агентов
+              {{ $t('onboarding.connectDescription') }}
             </p>
           </div>
 
@@ -294,24 +296,24 @@ checkClaudeStatus()
           <div v-if="claudeStatus === 'checking'"
                class="bg-bg-main rounded-xl p-8 text-center border border-border">
             <Loader2 class="w-8 h-8 animate-spin text-brand mx-auto mb-3" />
-            <p class="text-sm text-text-secondary">Проверка статуса...</p>
+            <p class="text-sm text-text-secondary">{{ $t('claudeAuth.checking') }}</p>
           </div>
 
           <!-- Not connected -->
           <div v-else-if="claudeStatus === 'not_connected'"
                class="bg-bg-main rounded-xl p-8 border border-border">
             <div class="mb-6">
-              <h3 class="font-medium text-text-primary mb-2">Как это работает</h3>
+              <h3 class="font-medium text-text-primary mb-2">{{ $t('onboarding.howItWorks') }}</h3>
               <ol class="text-sm text-text-secondary space-y-2 list-decimal list-inside">
-                <li>Нажмите "Подключить" — запустится процесс авторизации</li>
-                <li>Вы получите ссылку для входа в Claude</li>
-                <li>Перейдите по ссылке и войдите в свой Team аккаунт</li>
-                <li>После авторизации — переходим к настройке</li>
+                <li>{{ $t('onboarding.onboardingStep1') }}</li>
+                <li>{{ $t('onboarding.onboardingStep2') }}</li>
+                <li>{{ $t('onboarding.onboardingStep3') }}</li>
+                <li>{{ $t('onboarding.onboardingStep4') }}</li>
               </ol>
             </div>
             <button @click="startClaudeAuth"
                     class="w-full px-4 py-3 bg-brand text-white rounded-lg text-sm font-medium hover:bg-[#4A75E6] transition-colors">
-              Подключить Claude аккаунт
+              {{ $t('onboarding.connectClaude') }}
             </button>
           </div>
 
@@ -320,7 +322,7 @@ checkClaudeStatus()
                class="bg-bg-main rounded-xl p-8 border border-border">
             <div v-if="authUrl" class="mb-6">
               <p class="text-sm text-text-primary font-medium mb-2">
-                Перейдите по ссылке для авторизации:
+                {{ $t('onboarding.followLink') }}
               </p>
               <a :href="authUrl" target="_blank" rel="noopener noreferrer"
                  class="flex items-center gap-2 px-4 py-3 bg-brand/10 border border-brand/30 rounded-lg text-brand text-sm hover:bg-brand/20 transition-colors break-all">
@@ -328,12 +330,12 @@ checkClaudeStatus()
                 {{ authUrl }}
               </a>
               <p class="text-xs text-text-muted mt-2">
-                После авторизации вернитесь сюда — статус обновится автоматически
+                {{ $t('onboarding.returnHelp') }}
               </p>
             </div>
             <div v-else class="text-center mb-4">
               <Loader2 class="w-6 h-6 animate-spin text-brand mx-auto mb-2" />
-              <p class="text-sm text-text-secondary">Запуск авторизации...</p>
+              <p class="text-sm text-text-secondary">{{ $t('onboarding.starting') }}</p>
             </div>
             <div v-if="terminalOutput.length > 0"
                  class="bg-bg-subtle rounded-lg border border-border p-3 max-h-32 overflow-y-auto">
@@ -347,8 +349,8 @@ checkClaudeStatus()
           <div v-else-if="claudeStatus === 'connected'"
                class="bg-bg-main rounded-xl p-8 border border-border text-center">
             <Check class="w-12 h-12 text-green-500 mx-auto mb-3" />
-            <p class="font-medium text-text-primary">Подключено!</p>
-            <p class="text-sm text-text-secondary mt-1">Переходим к настройке...</p>
+            <p class="font-medium text-text-primary">{{ $t('onboarding.connected') }}</p>
+            <p class="text-sm text-text-secondary mt-1">{{ $t('onboarding.settingUp') }}</p>
           </div>
         </div>
 
@@ -359,10 +361,10 @@ checkClaudeStatus()
               <Sparkles class="w-8 h-8 text-brand" />
             </div>
             <h1 class="font-heading text-2xl font-bold text-text-primary">
-              Расскажите о ваших задачах
+              {{ $t('onboarding.describeTasks') }}
             </h1>
             <p class="text-text-secondary mt-2 max-w-md mx-auto">
-              Опишите, какие задачи вы хотите решать с помощью AI-агентов, и мы подберём для вас оптимальные пайплайны
+              {{ $t('onboarding.describeHelp') }}
             </p>
           </div>
 
@@ -371,17 +373,17 @@ checkClaudeStatus()
               v-model="userDescription"
               rows="6"
               class="w-full px-4 py-3 rounded-lg border border-border bg-bg-input text-text-primary text-sm placeholder-text-muted outline-none transition-colors focus:border-brand focus:ring-1 focus:ring-brand resize-none"
-              placeholder="Например: Я PM, хочу чтобы агенты помогали создавать задачи в Jira, декомпозировать эпики, генерировать QA-чеклисты. Также нужна автоматическая проверка кода при ревью MR..."
+              :placeholder="$t('onboarding.describePlaceholder')"
             ></textarea>
 
             <div class="mt-4 flex items-center gap-3">
               <p class="text-xs text-text-muted flex-1">
-                Чем подробнее опишете — тем точнее подберём пайплайны
+                {{ $t('onboarding.describeHint') }}
               </p>
               <button @click="submitDescription"
                       :disabled="!userDescription.trim()"
                       class="px-5 py-2.5 bg-brand text-white rounded-lg text-sm font-medium hover:bg-[#4A75E6] transition-colors disabled:opacity-40 flex items-center gap-2">
-                Подобрать
+                {{ $t('onboarding.suggestButton') }}
                 <ArrowRight :size="16" />
               </button>
             </div>
@@ -390,10 +392,10 @@ checkClaudeStatus()
           <!-- Examples -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button v-for="example in [
-              'Я разработчик. Хочу ревью кода, автотесты и помощь с задачами из Jira',
-              'Я PM. Нужно создавать задачи, декомпозировать эпики, отчёты по спринтам',
-              'Я QA. Хочу генерировать чеклисты и автотесты по задачам',
-              'Я дизайнер. Нужно переносить макеты из Figma и работать с дизайн-системой',
+              $t('onboarding.example1'),
+              $t('onboarding.example2'),
+              $t('onboarding.example3'),
+              $t('onboarding.example4'),
             ]" :key="example"
               @click="userDescription = example"
               class="text-left px-4 py-3 rounded-lg border border-border bg-bg-main text-xs text-text-secondary hover:border-brand/50 hover:text-text-primary transition-colors">
@@ -408,10 +410,10 @@ checkClaudeStatus()
             <Loader2 class="w-10 h-10 animate-spin text-brand" />
           </div>
           <h2 class="font-heading text-xl font-bold text-text-primary mb-2">
-            Анализируем ваши задачи...
+            {{ $t('onboarding.analyzing') }}
           </h2>
           <p class="text-text-secondary text-sm max-w-sm mx-auto">
-            AI подбирает подходящие пайплайны из существующих и создаёт новые под ваши задачи
+            {{ $t('onboarding.analyzingHelp') }}
           </p>
           <div class="mt-8 max-w-xs mx-auto">
             <div class="h-1 bg-border rounded-full overflow-hidden">
@@ -424,10 +426,10 @@ checkClaudeStatus()
         <div v-else-if="step === 3" class="space-y-6">
           <div class="text-center">
             <h1 class="font-heading text-2xl font-bold text-text-primary">
-              Ваши пайплайны готовы
+              {{ $t('onboarding.pipelinesReady') }}
             </h1>
             <p class="text-text-secondary mt-2">
-              Выберите, какие пайплайны добавить в ваше рабочее пространство
+              {{ $t('onboarding.selectHelp') }}
             </p>
           </div>
 
@@ -435,7 +437,7 @@ checkClaudeStatus()
           <div v-if="suggestedExisting.length > 0">
             <h3 class="text-sm font-medium text-text-primary mb-3 flex items-center gap-2">
               <Play :size="14" class="text-brand" />
-              Подходящие из каталога
+              {{ $t('onboarding.matchingCatalog') }}
             </h3>
             <div class="space-y-2">
               <button v-for="pipeline in suggestedExisting" :key="pipeline.id"
@@ -456,7 +458,7 @@ checkClaudeStatus()
                             :class="pipeline.human_loop
                               ? 'bg-brand/10 text-brand'
                               : 'bg-green-500/10 text-green-600'">
-                        {{ pipeline.human_loop ? 'Чат с TL' : 'Авто' }}
+                        {{ pipeline.human_loop ? $t('pipelines.chatWithTL') : $t('pipelines.auto') }}
                       </span>
                     </div>
                     <p class="text-xs text-text-secondary">{{ pipeline.description }}</p>
@@ -476,7 +478,7 @@ checkClaudeStatus()
           <div v-if="suggestedNew.length > 0">
             <h3 class="text-sm font-medium text-text-primary mb-3 flex items-center gap-2">
               <Sparkles :size="14" class="text-brand" />
-              Новые пайплайны под ваши задачи
+              {{ $t('onboarding.newPipelines') }}
             </h3>
             <div class="space-y-2">
               <button v-for="(pipeline, idx) in suggestedNew" :key="idx"
@@ -494,13 +496,13 @@ checkClaudeStatus()
                     <div class="flex items-center gap-2 mb-0.5">
                       <span class="font-medium text-sm text-text-primary">{{ pipeline.title }}</span>
                       <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-600 font-medium">
-                        Новый
+                        {{ $t('common.new') }}
                       </span>
                       <span class="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
                             :class="pipeline.human_loop
                               ? 'bg-brand/10 text-brand'
                               : 'bg-green-500/10 text-green-600'">
-                        {{ pipeline.human_loop ? 'Чат с TL' : 'Авто' }}
+                        {{ pipeline.human_loop ? $t('pipelines.chatWithTL') : $t('pipelines.auto') }}
                       </span>
                     </div>
                     <p class="text-xs text-text-secondary">{{ pipeline.description }}</p>
@@ -520,7 +522,7 @@ checkClaudeStatus()
           <div v-if="otherExisting.length > 0">
             <h3 class="text-sm font-medium text-text-muted mb-3 flex items-center gap-2">
               <Plus :size="14" />
-              Также можем предложить
+              {{ $t('onboarding.alsoSuggest') }}
             </h3>
             <div class="space-y-2">
               <button v-for="pipeline in otherExisting" :key="pipeline.id"
@@ -541,7 +543,7 @@ checkClaudeStatus()
                             :class="pipeline.human_loop
                               ? 'bg-brand/10 text-brand'
                               : 'bg-green-500/10 text-green-600'">
-                        {{ pipeline.human_loop ? 'Чат с TL' : 'Авто' }}
+                        {{ pipeline.human_loop ? $t('pipelines.chatWithTL') : $t('pipelines.auto') }}
                       </span>
                     </div>
                     <p class="text-xs text-text-muted">{{ pipeline.description }}</p>
@@ -554,7 +556,7 @@ checkClaudeStatus()
           <!-- No suggestions -->
           <div v-if="suggestedExisting.length === 0 && suggestedNew.length === 0 && otherExisting.length === 0"
                class="text-center py-8 text-text-secondary text-sm">
-            Не удалось подобрать пайплайны. Вы можете создать их позже вручную.
+            {{ $t('onboarding.noSuggestions') }}
           </div>
 
           <!-- Actions -->
@@ -562,17 +564,17 @@ checkClaudeStatus()
             <button @click="step = 1"
                     class="px-4 py-2.5 border border-border rounded-lg text-sm text-text-secondary hover:bg-bg-main transition-colors flex items-center gap-2">
               <ArrowLeft :size="16" />
-              Назад
+              {{ $t('common.back') }}
             </button>
             <div class="flex-1"></div>
             <p class="text-xs text-text-muted">
-              {{ totalSelected }} выбрано
+              {{ $t('onboarding.selected', { count: totalSelected }) }}
             </p>
             <button @click="completeOnboarding"
                     :disabled="completing"
                     class="px-5 py-2.5 bg-brand text-white rounded-lg text-sm font-medium hover:bg-[#4A75E6] transition-colors disabled:opacity-50 flex items-center gap-2">
               <Loader2 v-if="completing" :size="16" class="animate-spin" />
-              Добавить и начать
+              {{ $t('onboarding.addAndStart') }}
               <ArrowRight v-if="!completing" :size="16" />
             </button>
           </div>
@@ -584,10 +586,10 @@ checkClaudeStatus()
             <Check class="w-10 h-10 text-green-500" />
           </div>
           <h2 class="font-heading text-2xl font-bold text-text-primary mb-2">
-            Всё готово!
+            {{ $t('onboarding.allDone') }}
           </h2>
           <p class="text-text-secondary text-sm max-w-sm mx-auto">
-            Ваши пайплайны настроены. Переходим в рабочее пространство...
+            {{ $t('onboarding.allDoneText') }}
           </p>
         </div>
 
