@@ -13,12 +13,6 @@ RUN npm run build
 FROM nginx:1.27-alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
-
-# nginx:alpine автоматически прогоняет envsubst по файлам в /etc/nginx/templates/
-# и кладёт результат в /etc/nginx/conf.d/
-# NGINX_ENVSUBST_FILTER ограничивает подстановку только нашими переменными,
-# чтобы не затереть $http_upgrade, $host и прочие nginx-переменные
-ENV NGINX_ENVSUBST_FILTER=AUTH

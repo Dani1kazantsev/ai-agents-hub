@@ -1,15 +1,9 @@
 services:
   # ── Frontend (Vue 3 + Nginx) ──
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
     ports:
-      - "${FRONTEND_PORT:-80}:80"
-    environment:
-      # envsubst подставит в nginx.conf
-      AUTH_UPSTREAM: ${AUTH_PROVIDER_URL:-http://backend:8000}
-      AUTH_HOST: ${AUTH_HOST:-localhost}
+      - "${PORT:-3000}:80"
     depends_on:
       backend:
         condition: service_healthy
@@ -19,14 +13,10 @@ services:
 
   # ── Backend (FastAPI + Claude CLI) ──
   backend:
-    build:
-      context: ../ai-agents-hub-back
-      dockerfile: Dockerfile
-    env_file:
-      - ../ai-agents-hub-back/.env
+    image: dani1kazantsev/ai-agents-hub-back:latest
+    env_file: .env
     environment:
-      # Переопределяем хосты на docker-имена сервисов
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-ai_agent_hub}
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/ai_agent_hub
       REDIS_URL: redis://redis:6379/0
       CLAUDE_CONFIGS_DIR: /data/claude-configs
       MCP_SERVERS_DIR: /app/mcp-servers
@@ -51,13 +41,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-ai_agent_hub}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ai_agent_hub
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -68,8 +58,6 @@ services:
   # ── Redis 7 ──
   redis:
     image: redis:7-alpine
-    volumes:
-      - redisdata:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -81,7 +69,6 @@ services:
 
 volumes:
   pgdata:
-  redisdata:
   claude-configs:
 
 networks:

@@ -18,11 +18,6 @@ export default defineConfig({
         target: 'http://localhost:8000',
         ws: true,
       },
-      '/auth-provider': {
-        target: process.env.AUTH_PROVIDER_URL || 'http://localhost:8000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/auth-provider/, ''),
-      },
     },
   },
 })

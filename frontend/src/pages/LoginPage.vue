@@ -7,6 +7,8 @@ import { Zap, Loader2 } from 'lucide-vue-next'
 const router = useRouter()
 const auth = useAuthStore()
 
+const isRegister = ref(false)
+const email = ref('')
 const username = ref('')
 const password = ref('')
 const error = ref('')
@@ -16,17 +18,28 @@ async function handleSubmit() {
   error.value = ''
   loading.value = true
   try {
-    await auth.loginWithCredentials(username.value, password.value)
+    if (isRegister.value) {
+      await auth.register(email.value, username.value, password.value)
+    } else {
+      await auth.loginWithCredentials(username.value, password.value)
+    }
     if (auth.user && !auth.user.onboarding_completed) {
       router.push('/onboarding')
     } else {
       router.push('/catalog')
     }
   } catch (e: any) {
-    error.value = 'Неверный логин или пароль'
+    error.value = isRegister.value
+      ? 'Ошибка регистрации. Возможно, email или username уже заняты.'
+      : 'Неверный логин или пароль'
   } finally {
     loading.value = false
   }
+}
+
+function toggleMode() {
+  isRegister.value = !isRegister.value
+  error.value = ''
 }
 </script>
 
@@ -38,12 +51,28 @@ async function handleSubmit() {
           <Zap :size="24" class="text-white" />
         </div>
         <h1 class="font-heading text-2xl font-semibold text-text-primary">Agent Hub</h1>
-        <p class="text-sm text-text-secondary mt-1">Войдите в свой аккаунт</p>
+        <p class="text-sm text-text-secondary mt-1">
+          {{ isRegister ? 'Создайте аккаунт' : 'Войдите в свой аккаунт' }}
+        </p>
       </div>
 
       <form @submit.prevent="handleSubmit" class="bg-bg-main rounded-2xl border border-border p-6 space-y-4">
+        <div v-if="isRegister">
+          <label class="block text-sm font-medium text-text-primary mb-1.5">Email</label>
+          <input
+            v-model="email"
+            type="email"
+            required
+            autocomplete="email"
+            class="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg-input text-sm text-text-primary placeholder-text-muted outline-none transition-colors focus:border-brand focus:ring-1 focus:ring-brand"
+            placeholder="you@example.com"
+          />
+        </div>
+
         <div>
-          <label class="block text-sm font-medium text-text-primary mb-1.5">Логин</label>
+          <label class="block text-sm font-medium text-text-primary mb-1.5">
+            {{ isRegister ? 'Username' : 'Логин' }}
+          </label>
           <input
             v-model="username"
             type="text"
@@ -60,13 +89,13 @@ async function handleSubmit() {
             v-model="password"
             type="password"
             required
-            autocomplete="current-password"
+            :autocomplete="isRegister ? 'new-password' : 'current-password'"
             class="w-full px-3.5 py-2.5 rounded-lg border border-border bg-bg-input text-sm text-text-primary placeholder-text-muted outline-none transition-colors focus:border-brand focus:ring-1 focus:ring-brand"
             placeholder="password"
           />
         </div>
 
-        <div v-if="error" class="text-sm text-brand font-medium">{{ error }}</div>
+        <div v-if="error" class="text-sm text-red-500 font-medium">{{ error }}</div>
 
         <button
           type="submit"
@@ -74,8 +103,15 @@ async function handleSubmit() {
           class="w-full py-2.5 rounded-lg bg-brand text-white text-sm font-medium font-heading transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Loader2 v-if="loading" :size="16" class="animate-spin" />
-          Войти
+          {{ isRegister ? 'Зарегистрироваться' : 'Войти' }}
         </button>
+
+        <p class="text-center text-sm text-text-secondary">
+          {{ isRegister ? 'Уже есть аккаунт?' : 'Нет аккаунта?' }}
+          <button type="button" @click="toggleMode" class="text-brand hover:underline ml-1">
+            {{ isRegister ? 'Войти' : 'Зарегистрироваться' }}
+          </button>
+        </p>
       </form>
     </div>
   </div>

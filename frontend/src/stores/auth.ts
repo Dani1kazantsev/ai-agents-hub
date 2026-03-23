@@ -23,14 +23,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function loginWithCredentials(username: string, password: string) {
-    const params = new URLSearchParams({ username, password })
-    const res = await fetch('/auth-provider/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    })
-    if (!res.ok) throw new Error('Login failed')
-    const data = await res.json()
+    const data = await api.post<{ access_token: string }>('/auth/login', { username, password })
+    setToken(data.access_token)
+    await fetchUser()
+  }
+
+  async function register(email: string, username: string, password: string) {
+    const data = await api.post<{ access_token: string }>('/auth/register', { email, username, password })
     setToken(data.access_token)
     await fetchUser()
   }
@@ -66,6 +65,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user, token, isAuthenticated, claudeAuthenticated,
-    setToken, logout, loginWithCredentials, fetchUser, checkClaudeAuth, init,
+    setToken, logout, loginWithCredentials, register, fetchUser, checkClaudeAuth, init,
   }
 })
