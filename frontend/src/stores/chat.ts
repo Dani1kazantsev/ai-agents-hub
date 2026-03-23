@@ -197,12 +197,14 @@ export const useChatStore = defineStore('chat', () => {
       tokens_used: 0,
       created_at: new Date().toISOString(),
     })
-    wsConnection.value.send(JSON.stringify({ type: 'message', content }))
+    const locale = localStorage.getItem('locale') || 'ru'
+    wsConnection.value.send(JSON.stringify({ type: 'message', content, locale }))
   }
 
   function executeAction(action: string) {
     if (!wsConnection.value || wsConnection.value.readyState !== WebSocket.OPEN) return
-    wsConnection.value.send(JSON.stringify({ type: 'action', action }))
+    const locale = localStorage.getItem('locale') || 'ru'
+    wsConnection.value.send(JSON.stringify({ type: 'action', action, locale }))
     actions.value = []
     isThinking.value = true
   }
