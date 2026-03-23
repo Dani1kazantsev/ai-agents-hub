@@ -15,6 +15,7 @@ const status = ref<'checking' | 'not_connected' | 'connecting' | 'waiting_url' |
 const authUrl = ref('')
 const terminalOutput = ref<string[]>([])
 const ws = ref<WebSocket | null>(null)
+const pollTimer = ref<ReturnType<typeof setInterval> | null>(null)
 
 async function checkStatus() {
   status.value = 'checking'
@@ -39,6 +40,8 @@ function startAuth() {
     } else if (data.type === 'auth_url') {
       authUrl.value = data.url
       status.value = 'waiting_url'
+      // Poll auth status every 3s — user may complete auth in browser
+      startPolling()
     } else if (data.type === 'done') {
       if (data.success) {
         status.value = 'connected'
@@ -81,7 +84,28 @@ async function disconnect() {
   }
 }
 
+function startPolling() {
+  if (pollTimer.value) return
+  pollTimer.value = setInterval(async () => {
+    await auth.checkClaudeAuth()
+    if (auth.claudeAuthenticated) {
+      status.value = 'connected'
+      toast.success(t('claudeAuth.connectSuccess'))
+      stopPolling()
+      if (ws.value) { ws.value.close(); ws.value = null }
+    }
+  }, 3000)
+}
+
+function stopPolling() {
+  if (pollTimer.value) {
+    clearInterval(pollTimer.value)
+    pollTimer.value = null
+  }
+}
+
 onUnmounted(() => {
+  stopPolling()
   if (ws.value) {
     ws.value.close()
     ws.value = null

@@ -10,7 +10,7 @@ import {
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, tm } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const toast = useToast()
@@ -209,7 +209,7 @@ async function skipOnboarding() {
   }
 }
 
-const stepLabels = computed(() => t('onboarding.steps') as unknown as string[])
+const stepLabels = computed(() => tm('onboarding.steps') as string[])
 
 function getStepStatus(idx: number) {
   if (step.value > idx || (step.value === idx && idx === 3)) return 'active'
