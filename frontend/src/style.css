@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #5988FF;
+  --color-text-primary: #0D0D0D;
+  --color-text-secondary: #7A7A7A;
+  --color-text-muted: #B0B0B0;
+  --color-bg-main: #FFFFFF;
+  --color-bg-subtle: #FAFAFA;
+  --color-bg-card: #FFFFFF;
+  --color-bg-input: #FFFFFF;
+  --color-border: #E8E8E8;
+  --color-user-bubble: #0D0D0D;
+  --color-user-bubble-text: #FFFFFF;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+button,
+[role="button"],
+a,
+select,
+input[type="checkbox"],
+input[type="radio"],
+input[type="color"] {
+  cursor: pointer;
+}
+
+html.dark {
+  --color-brand: #5988FF;
+  --color-text-primary: #F0F0F0;
+  --color-text-secondary: #A0A0A0;
+  --color-text-muted: #666666;
+  --color-bg-main: #121212;
+  --color-bg-subtle: #1A1A1A;
+  --color-bg-card: #1A1A1A;
+  --color-bg-input: #1A1A1A;
+  --color-border: #2A2A2A;
+  --color-user-bubble: #5988FF;
+  --color-user-bubble-text: #FFFFFF;
+}

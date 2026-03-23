@@ -1,0 +1,263 @@
+{
+  "description": "Маппинг сотрудников Jira проекта LX. Используй для назначения задач и фильтрации по assignee без дополнительных API-запросов.",
+  "members": {
+    "Valeriya Kudreyko": {
+      "accountId": "712020:fe470c40-3fe9-45f2-9548-c77f799aa69e",
+      "displayName": "Valeriya Kudreyko"
+    },
+    "Ksyusha Korsak Yo": {
+      "accountId": "712020:fac6d429-260f-469e-a64a-c5ca6c498424",
+      "displayName": "Ksyusha Korsak Yo"
+    },
+    "Daria Danilova": {
+      "accountId": "712020:f88ab017-b6bc-48ff-94ea-8b419d797115",
+      "displayName": "Daria Danilova"
+    },
+    "Matvey Rachkin": {
+      "accountId": "712020:01e59d20-39c6-48c5-87b0-73492a9a5b44",
+      "displayName": "Matvey Rachkin"
+    },
+    "Arsenii Kugrashov": {
+      "accountId": "712020:ea1a3802-1810-4816-88eb-72b70bc2a869",
+      "displayName": "Arsenii Kugrashov"
+    },
+    "Yury Zytsar": {
+      "accountId": "712020:e03e5c8d-ba3a-4fec-be4e-2fe0e89026a0",
+      "displayName": "Yury Zytsar"
+    },
+    "Dmitrii Kondratev": {
+      "accountId": "712020:dd02c2aa-2da9-4e54-a0fe-6834718eb354",
+      "displayName": "Dmitrii Kondratev"
+    },
+    "Andreev Anatolii": {
+      "accountId": "712020:d367a8a0-8058-43ee-94f5-5d12101abaf0",
+      "displayName": "Andreev Anatolii"
+    },
+    "Evgenia Semenova": {
+      "accountId": "712020:ceeeddf0-97a4-40ad-ad7f-876785c6d7ee",
+      "displayName": "Evgenia Semenova"
+    },
+    "Robert Gumerov": {
+      "accountId": "712020:cd34c238-d5dd-4c22-a731-9bbc4ddc8428",
+      "displayName": "Robert Gumerov"
+    },
+    "Vyacheslav Voronov": {
+      "accountId": "712020:c99f2df0-06e0-4129-beac-3fcf5bee2458",
+      "displayName": "Vyacheslav Voronov"
+    },
+    "Ed Moskalenko": {
+      "accountId": "712020:add6fac7-dd18-4ccd-ba04-be992f87c3bb",
+      "displayName": "Ed Moskalenko"
+    },
+    "Evgeny Smirnov": {
+      "accountId": "712020:99e767b1-80c6-49e4-a684-fc3daf951d41",
+      "displayName": "Evgeny Smirnov"
+    },
+    "Alina Iakubova": {
+      "accountId": "712020:9206c4c2-1770-46ea-bb15-53fd301c74b1",
+      "displayName": "Alina Iakubova"
+    },
+    "Bella Talipova": {
+      "accountId": "712020:9008ff1e-8e0f-4c9c-93b8-2721bf9eb469",
+      "displayName": "Bella Talipova"
+    },
+    "Mihail Artyukhov": {
+      "accountId": "712020:88da6223-61f9-439a-a145-7cd77304f053",
+      "displayName": "Mihail Artyukhov"
+    },
+    "AI Team": {
+      "accountId": "712020:87801a2c-079f-4037-81d1-176697ee6d97",
+      "displayName": "AI Team",
+      "service_account": true
+    },
+    "Timofei Nikolaev": {
+      "accountId": "60e2d45f7f191f006957811a",
+      "displayName": "Timofei Nikolaev"
+    },
+    "Ilya Korolev": {
+      "accountId": "712020:6a8acd5f-a6a5-4277-901f-d16cfec0d40a",
+      "displayName": "Ilya Korolev"
+    },
+    "Danila Smyshlyaev": {
+      "accountId": "712020:68065d9d-5abd-4160-ae4f-e4fb2d35ee66",
+      "displayName": "Danila Smyshlyaev"
+    },
+    "Kristina Shumkova": {
+      "accountId": "712020:61229bbf-1374-4c89-9d6a-a91b98aad5fd",
+      "displayName": "Kristina Shumkova"
+    },
+    "Aleksandr Zharynin": {
+      "accountId": "712020:575b6c22-c9cb-42bf-8ae3-646e47e8eb8f",
+      "displayName": "Aleksandr Zharynin"
+    },
+    "Polina Partolina": {
+      "accountId": "712020:552c70aa-2939-4738-87b3-546415a8a56c",
+      "displayName": "Polina Partolina"
+    },
+    "Anastasiya Savenkova": {
+      "accountId": "712020:4c447d5e-0010-4206-aa4a-4bdab0cf5bf0",
+      "displayName": "Anastasiya Savenkova"
+    },
+    "Andres Fernandez": {
+      "accountId": "712020:3be83d27-3243-4704-9555-6318e8f117f8",
+      "displayName": "Andres Fernandez"
+    },
+    "Viktor Kuznetsov": {
+      "accountId": "712020:38717045-222b-48cb-9334-d92aadebdef6",
+      "displayName": "Viktor Kuznetsov"
+    },
+    "Denis Markoch": {
+      "accountId": "712020:373526cf-0553-4ac5-b8bd-a164401759e7",
+      "displayName": "Denis Markoch"
+    },
+    "Aleksandra Romanenko": {
+      "accountId": "712020:34d95091-1eac-4a08-aafa-3a920112f06e",
+      "displayName": "Aleksandra Romanenko"
+    },
+    "Artem Illarionov": {
+      "accountId": "712020:342490a3-3683-43e5-b283-e797555ca46b",
+      "displayName": "Artem Illarionov"
+    },
+    "Sergey Andreev": {
+      "accountId": "612dc350ae44ae0070a6e0e7",
+      "displayName": "Sergey Andreev"
+    },
+    "Natalia Baliura": {
+      "accountId": "712020:16ef6153-fc82-4c52-867d-5ce6318ffbd2",
+      "displayName": "Natalia Baliura"
+    },
+    "Ekaterina Shchekotikhina": {
+      "accountId": "712020:09e4dd9f-10dd-4df6-8b43-655454497edd",
+      "displayName": "Ekaterina Shchekotikhina"
+    },
+    "Kirill Panteleykov": {
+      "accountId": "63a1634215d69a40aa16c6bb",
+      "displayName": "Kirill Panteleykov"
+    },
+    "Alina Kuznetsova": {
+      "accountId": "637b913bf6c85b343c0825e0",
+      "displayName": "Alina Kuznetsova"
+    },
+    "Danila Kazantsev": {
+      "accountId": "634966b87d10ef7914938869",
+      "displayName": "Danila Kazantsev"
+    },
+    "Nikita Rachkin": {
+      "accountId": "615ada6a048360006a371cde",
+      "displayName": "Nikita Rachkin"
+    },
+    "Olga Astafurova": {
+      "accountId": "61078b350b454a0068fa53e2",
+      "displayName": "Ольга Астафурова"
+    },
+    "Vitaly Tkachenko": {
+      "accountId": "60c70ec6f65054006990aa42",
+      "displayName": "Vitaly Tkachenko"
+    },
+    "Maria Vostrikova": {
+      "accountId": "608129049c4625006b3134f4",
+      "displayName": "Мария Вострикова"
+    },
+    "Oleg Anuchin": {
+      "accountId": "604efa1006cbba006ad4315e",
+      "displayName": "Oleg Anuchin"
+    },
+    "Sveta Anikina": {
+      "accountId": "5f69d4ca262697006989529b",
+      "displayName": "Sveta Anikina"
+    }
+  },
+  "aliases": {
+    "Валерия": "Valeriya Kudreyko",
+    "Кудрейко": "Valeriya Kudreyko",
+    "Лера": "Valeriya Kudreyko",
+    "Ксюша": "Ksyusha Korsak Yo",
+    "Корсак": "Ksyusha Korsak Yo",
+    "Даша": "Daria Danilova",
+    "Данилова": "Daria Danilova",
+    "Матвей": "Matvey Rachkin",
+    "Рачкин": "Matvey Rachkin",
+    "Арсений": "Arsenii Kugrashov",
+    "Куграшов": "Arsenii Kugrashov",
+    "Юра": "Yury Zytsar",
+    "Юрий": "Yury Zytsar",
+    "Зыцарь": "Yury Zytsar",
+    "Дмитрий": "Dmitrii Kondratev",
+    "Кондратьев": "Dmitrii Kondratev",
+    "Анатолий": "Andreev Anatolii",
+    "Андреев Анатолий": "Andreev Anatolii",
+    "Женя Семенова": "Evgenia Semenova",
+    "Семенова": "Evgenia Semenova",
+    "Роберт": "Robert Gumerov",
+    "Гумеров": "Robert Gumerov",
+    "Вячеслав": "Vyacheslav Voronov",
+    "Воронов": "Vyacheslav Voronov",
+    "Слава": "Vyacheslav Voronov",
+    "Эд": "Ed Moskalenko",
+    "Москаленко": "Ed Moskalenko",
+    "Женя Смирнов": "Evgeny Smirnov",
+    "Смирнов": "Evgeny Smirnov",
+    "Алина Якубова": "Alina Iakubova",
+    "Якубова": "Alina Iakubova",
+    "Белла": "Bella Talipova",
+    "Талипова": "Bella Talipova",
+    "Михаил": "Mihail Artyukhov",
+    "Артюхов": "Mihail Artyukhov",
+    "Тимофей": "Timofei Nikolaev",
+    "Николаев": "Timofei Nikolaev",
+    "Илья": "Ilya Korolev",
+    "Королев": "Ilya Korolev",
+    "Данила Смышляев": "Danila Smyshlyaev",
+    "Смышляев": "Danila Smyshlyaev",
+    "Кристина": "Kristina Shumkova",
+    "Шумкова": "Kristina Shumkova",
+    "Александр": "Aleksandr Zharynin",
+    "Жарынин": "Aleksandr Zharynin",
+    "Полина": "Polina Partolina",
+    "Партолина": "Polina Partolina",
+    "Настя": "Anastasiya Savenkova",
+    "Савенкова": "Anastasiya Savenkova",
+    "Андрес": "Andres Fernandez",
+    "Фернандес": "Andres Fernandez",
+    "Виктор": "Viktor Kuznetsov",
+    "Кузнецов Виктор": "Viktor Kuznetsov",
+    "Денис": "Denis Markoch",
+    "Маркоч": "Denis Markoch",
+    "Александра": "Aleksandra Romanenko",
+    "Романенко": "Aleksandra Romanenko",
+    "Артем": "Artem Illarionov",
+    "Илларионов": "Artem Illarionov",
+    "Сергей": "Sergey Andreev",
+    "Андреев Сергей": "Sergey Andreev",
+    "Наталья": "Natalia Baliura",
+    "Балюра": "Natalia Baliura",
+    "Екатерина": "Ekaterina Shchekotikhina",
+    "Щекотихина": "Ekaterina Shchekotikhina",
+    "Кирилл": "Kirill Panteleykov",
+    "Пантелейков": "Kirill Panteleykov",
+    "Алина Кузнецова": "Alina Kuznetsova",
+    "Кузнецова": "Alina Kuznetsova",
+    "Данила": "Danila Kazantsev",
+    "Казанцев": "Danila Kazantsev",
+    "Никита": "Nikita Rachkin",
+    "Рачкин Никита": "Nikita Rachkin",
+    "Ольга": "Olga Astafurova",
+    "Астафурова": "Olga Astafurova",
+    "Виталий": "Vitaly Tkachenko",
+    "Ткаченко": "Vitaly Tkachenko",
+    "Мария": "Maria Vostrikova",
+    "Вострикова": "Maria Vostrikova",
+    "Олег": "Oleg Anuchin",
+    "Анучин": "Oleg Anuchin",
+    "Света": "Sveta Anikina",
+    "Аникина": "Sveta Anikina"
+  },
+  "duplicate_accounts": {
+    "matvey.rachkin (712020:f6872485-b96a-423f-8780-eada90a6f20e)": "Дубль Matvey Rachkin — используй основной accountId",
+    "testtest (712020:f0ed6179-3d1c-4f3f-ab2a-df8054e12032)": "Тестовый аккаунт — не назначать",
+    "i.support (712020:41769767-1ca4-4bc4-a6ac-a6e37ee67a0a)": "Сервисный аккаунт поддержки",
+    "s.andreev (712020:2f348195-4d34-435a-bb64-eb3f07c5c636)": "Дубль Sergey Andreev — используй основной accountId",
+    "t.nikolaev (712020:86e274b4-37cb-458e-8171-dce5864e59ce)": "Дубль Timofei Nikolaev — используй основной accountId",
+    "Polina Partolina (712020:458f991c-ee91-440e-b324-6bcfc1373481)": "Дубль — используй основной accountId 712020:552c70aa-..."
+  }
+}

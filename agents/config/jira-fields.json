@@ -1,0 +1,59 @@
+{
+  "api": {
+    "search_endpoint": "/rest/api/3/search/jql",
+    "method": "POST",
+    "comments": {
+      "get": "/rest/api/3/issue/{issueKey}/comment",
+      "post": "/rest/api/3/issue/{issueKey}/comment"
+    }
+  },
+  "statuses": {
+    "open": { "id": "1", "name": "Open" },
+    "developing": { "id": "10080", "name": "Developing" },
+    "developed": { "id": "10081", "name": "Developed" },
+    "reviewing": { "id": "10074", "name": "Reviewing" },
+    "reviewed": { "id": "10075", "name": "Reviewed" },
+    "poppycock": { "id": "10079", "name": "Poppycock" }
+  },
+  "custom_fields": {
+    "result": "customfield_10069",
+    "branch": "customfield_10039",
+    "reviewer": "customfield_10106",
+    "story_points": "customfield_10028",
+    "sprint": "customfield_10020"
+  },
+  "issue_types": {
+    "issue": { "id": "10005", "name": "Issue" },
+    "subtask": { "name": "Подзадача" },
+    "story": { "name": "История" },
+    "bug": { "name": "Баг" },
+    "epic": { "name": "Эпик" },
+    "task": { "name": "Задача" }
+  },
+  "labels_mapping": {
+    "type_labels": {
+      "frontend": "Фронтенд-задача",
+      "backend": "Бэкенд-задача",
+      "mobile_dev": "Мобильная разработка"
+    },
+    "project_labels": {
+      "new_bo": "backoffice_front",
+      "new_platform": "learning-platform-frontend",
+      "booking": "booking_frontend",
+      "hub": "hub_frontend",
+      "mobile_platform": "learning-platform-mobile",
+      "web_view_landing": "web-view-app",
+      "web_event_receiver": "web_event_receiver_backend",
+      "zoom_service": "zoom_service",
+      "quiz_service": "quiz_service",
+      "mailing": "mailing",
+      "scratch_api": "scratch-api",
+      "hub_backend": "hub_backend",
+      "lead_scoring": "lead-scoring-backend",
+      "bloomreach": "bloomreach_service",
+      "wa_webhooks": "wa_webhooks_backend",
+      "sso": "sso",
+      "booking_back": "booking_backend"
+    }
+  }
+}

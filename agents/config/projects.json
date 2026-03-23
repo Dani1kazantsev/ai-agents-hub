@@ -1,0 +1,148 @@
+{
+  "projects": [
+    {
+      "name": "learning-platform-frontend",
+      "type": "frontend",
+      "jira_label": "new_platform",
+      "gitlab_id": 36,
+      "default_branch": "main",
+      "stack": ["nuxt3", "vue3", "typescript", "vite", "pinia", "tailwindcss"]
+    },
+    {
+      "name": "web-view-app",
+      "type": "frontend",
+      "jira_label": "web_view_landing",
+      "gitlab_id": 101,
+      "default_branch": "master",
+      "stack": ["vue3", "typescript", "vite", "ionic", "capacitor", "pinia"]
+    },
+    {
+      "name": "hub_frontend",
+      "type": "frontend",
+      "jira_label": "hub",
+      "gitlab_id": 16,
+      "default_branch": "master",
+      "stack": ["nuxt2", "vue2", "bootstrap-vue", "vuex"]
+    },
+    {
+      "name": "booking_frontend",
+      "type": "frontend",
+      "jira_label": "booking",
+      "gitlab_id": 15,
+      "default_branch": "master",
+      "stack": ["vue2", "vue-cli", "vuex"]
+    },
+    {
+      "name": "backoffice_front",
+      "type": "frontend",
+      "jira_label": "new_bo",
+      "gitlab_id": 83,
+      "default_branch": "master",
+      "stack": ["vue3", "typescript", "vite", "vuetify", "pinia"]
+    },
+    {
+      "name": "client_events_backend",
+      "type": "backend",
+      "jira_label": null,
+      "gitlab_id": null,
+      "default_branch": "master",
+      "stack": ["go", "bunrouter", "bun-orm", "postgresql", "rabbitmq"]
+    },
+    {
+      "name": "web_event_receiver_backend",
+      "type": "backend",
+      "jira_label": "web_event_receiver",
+      "gitlab_id": 117,
+      "default_branch": "main",
+      "stack": ["go"]
+    },
+    {
+      "name": "zoom_service",
+      "type": "backend",
+      "jira_label": "zoom_service",
+      "gitlab_id": 110,
+      "default_branch": "main",
+      "stack": ["go"]
+    },
+    {
+      "name": "quiz_service",
+      "type": "backend",
+      "jira_label": "quiz_service",
+      "gitlab_id": 115,
+      "default_branch": "master",
+      "stack": ["python"]
+    },
+    {
+      "name": "mailing",
+      "type": "backend",
+      "jira_label": "mailing",
+      "gitlab_id": 5,
+      "default_branch": "main",
+      "stack": ["python"]
+    },
+    {
+      "name": "scratch-api",
+      "type": "backend",
+      "jira_label": "scratch_api",
+      "gitlab_id": 54,
+      "default_branch": "master",
+      "stack": ["python"]
+    },
+    {
+      "name": "hub_backend",
+      "type": "backend",
+      "jira_label": "hub_backend",
+      "gitlab_id": 11,
+      "default_branch": "master",
+      "stack": ["python"]
+    },
+    {
+      "name": "lead-scoring-backend",
+      "type": "backend",
+      "jira_label": "lead_scoring",
+      "gitlab_id": 69,
+      "default_branch": "master",
+      "stack": ["python"]
+    },
+    {
+      "name": "bloomreach_service",
+      "type": "backend",
+      "jira_label": "bloomreach",
+      "gitlab_id": 98,
+      "default_branch": "master",
+      "stack": ["go"]
+    },
+    {
+      "name": "wa_webhooks_backend",
+      "type": "backend",
+      "jira_label": "wa_webhooks",
+      "gitlab_id": 113,
+      "default_branch": "master",
+      "stack": ["go"]
+    },
+    {
+      "name": "sso",
+      "type": "backend",
+      "jira_label": "sso",
+      "gitlab_id": 24,
+      "default_branch": "main",
+      "stack": ["python", "fastapi"]
+    },
+    {
+      "name": "booking_backend",
+      "type": "backend",
+      "jira_label": "booking_back",
+      "gitlab_id": 10,
+      "default_branch": "master",
+      "stack": ["python", "fastapi"]
+    },
+    {
+      "name": "learning-platform-mobile",
+      "type": "mobile",
+      "jira_label": "mobile_platform",
+      "gitlab_id": null,
+      "default_branch": "main",
+      "stack": ["flutter", "dart", "riverpod", "go_router", "dio", "firebase"]
+    }
+  ]
+}
