@@ -23,6 +23,9 @@ const claudeStatus = ref<'checking' | 'not_connected' | 'connecting' | 'waiting_
 const authUrl = ref('')
 const terminalOutput = ref<string[]>([])
 const ws = ref<WebSocket | null>(null)
+const authCode = ref('')
+const submittingCode = ref(false)
+const pollTimer = ref<ReturnType<typeof setInterval> | null>(null)
 
 async function checkClaudeStatus() {
   claudeStatus.value = 'checking'
@@ -50,6 +53,7 @@ function startClaudeAuth() {
     } else if (data.type === 'auth_url') {
       authUrl.value = data.url
       claudeStatus.value = 'waiting_url'
+      startAuthPolling()
     } else if (data.type === 'done') {
       if (data.success) {
         claudeStatus.value = 'connected'
@@ -73,6 +77,31 @@ function startClaudeAuth() {
   }
 
   ws.value = socket
+}
+
+function submitAuthCode() {
+  if (!authCode.value.trim() || !ws.value) return
+  submittingCode.value = true
+  ws.value.send(JSON.stringify({ type: 'input', data: authCode.value.trim() + '\n' }))
+  authCode.value = ''
+}
+
+function startAuthPolling() {
+  if (pollTimer.value) return
+  pollTimer.value = setInterval(async () => {
+    await auth.checkClaudeAuth()
+    if (auth.claudeAuthenticated) {
+      claudeStatus.value = 'connected'
+      toast.success(t('claudeAuth.connectSuccess'))
+      stopAuthPolling()
+      if (ws.value) { ws.value.close(); ws.value = null }
+      setTimeout(() => { step.value = 1 }, 800)
+    }
+  }, 3000)
+}
+
+function stopAuthPolling() {
+  if (pollTimer.value) { clearInterval(pollTimer.value); pollTimer.value = null }
 }
 
 // --- Step 1: Describe tasks ---
@@ -218,6 +247,7 @@ function getStepStatus(idx: number) {
 }
 
 onUnmounted(() => {
+  stopAuthPolling()
   if (ws.value) {
     ws.value.close()
     ws.value = null
@@ -332,6 +362,29 @@ checkClaudeStatus()
               <p class="text-xs text-text-muted mt-2">
                 {{ $t('onboarding.returnHelp') }}
               </p>
+
+              <!-- Auth code input -->
+              <div class="mt-4 p-4 bg-bg-subtle border border-border rounded-lg">
+                <p class="text-sm text-text-primary font-medium mb-2">
+                  {{ $t('claudeAuth.pasteCode') }}
+                </p>
+                <div class="flex gap-2">
+                  <input
+                    v-model="authCode"
+                    type="text"
+                    :placeholder="$t('claudeAuth.codePlaceholder')"
+                    class="flex-1 px-3 py-2 border border-border bg-bg-input text-text-primary rounded-lg text-sm font-mono outline-none focus:border-brand transition-colors"
+                    @keydown.enter="submitAuthCode"
+                  />
+                  <button
+                    @click="submitAuthCode"
+                    :disabled="!authCode.trim() || submittingCode"
+                    class="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    {{ $t('claudeAuth.submitCode') }}
+                  </button>
+                </div>
+              </div>
             </div>
             <div v-else class="text-center mb-4">
               <Loader2 class="w-6 h-6 animate-spin text-brand mx-auto mb-2" />
