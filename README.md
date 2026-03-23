@@ -148,7 +148,14 @@ For developers who want to add new tool integrations — see the [MCP Servers gu
 
 ## Screenshots
 
-> Coming soon — contribute screenshots by opening a PR!
+### Landing Page
+![Landing Page](screenshots/01-landing.png)
+
+### Agent Catalog
+![Agent Catalog](screenshots/03-catalog.png)
+
+### Integrations Settings
+![Integrations](screenshots/05-integrations.png)
 
 ## Development
 

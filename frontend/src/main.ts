@@ -15,25 +15,31 @@ app.use(router)
 const auth = useAuthStore()
 
 router.beforeEach(async (to) => {
+  // Try to restore session from cached token
   if (!auth.user && auth.token) {
     await auth.init()
   }
-  if (to.path === '/' && auth.isAuthenticated) {
-    return '/catalog'
+
+  // Public pages (landing, login) — always accessible
+  if (to.meta.public || to.meta.onboarding) {
+    // Authenticated user on landing → catalog
+    if (to.path === '/' && auth.isAuthenticated) {
+      return '/catalog'
+    }
+    // Authenticated user on login → catalog or onboarding
+    if (to.path === '/login' && auth.isAuthenticated) {
+      return auth.user && !auth.user.onboarding_completed ? '/onboarding' : '/catalog'
+    }
+    return
   }
-  if (!to.meta.public && !to.meta.onboarding && !auth.isAuthenticated) {
+
+  // Protected pages — require auth
+  if (!auth.isAuthenticated) {
     return '/login'
   }
-  if (to.path === '/login' && auth.isAuthenticated) {
-    // Redirect to onboarding if not completed
-    if (auth.user && !auth.user.onboarding_completed) {
-      return '/onboarding'
-    }
-    return '/catalog'
-  }
-  // Redirect to onboarding for authenticated users who haven't completed it
-  if (auth.isAuthenticated && auth.user && !auth.user.onboarding_completed
-      && !to.meta.public && !to.meta.onboarding && to.path !== '/claude-auth') {
+
+  // Onboarding guard
+  if (auth.user && !auth.user.onboarding_completed && to.path !== '/claude-auth') {
     return '/onboarding'
   }
 })
