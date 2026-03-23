@@ -17,7 +17,7 @@ const router = createRouter({
   routes: [
     { path: '/login', component: LoginPage, meta: { public: true } },
     { path: '/onboarding', component: OnboardingPage, meta: { onboarding: true } },
-    { path: '/', redirect: '/catalog' },
+    { path: '/', component: () => import('@/pages/LandingPage.vue'), meta: { public: true } },
     { path: '/claude-auth', component: ClaudeAuthPage },
     { path: '/catalog', component: CatalogPage },
     { path: '/chats', component: ChatsPage },

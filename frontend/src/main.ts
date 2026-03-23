@@ -18,6 +18,9 @@ router.beforeEach(async (to) => {
   if (!auth.user && auth.token) {
     await auth.init()
   }
+  if (to.path === '/' && auth.isAuthenticated) {
+    return '/catalog'
+  }
   if (!to.meta.public && !to.meta.onboarding && !auth.isAuthenticated) {
     return '/login'
   }

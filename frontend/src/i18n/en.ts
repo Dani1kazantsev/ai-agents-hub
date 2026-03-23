@@ -416,6 +416,24 @@ export default {
     },
   },
 
+  // Landing
+  landing: {
+    hero: 'Your AI team that actually does work',
+    subtitle: 'Connect Jira, GitLab, databases, Figma — and let AI agents handle QA, code review, task management, and more.',
+    getStarted: 'Get Started',
+    viewGithub: 'View on GitHub',
+    feature1Title: 'Agent Catalog',
+    feature1Text: 'Ready-to-use AI agents for QA, development, product management, design, and data analysis.',
+    feature2Title: 'Tool Integrations',
+    feature2Text: 'Connect Jira, GitLab, Figma, and databases in a few clicks. No config files needed.',
+    feature3Title: 'Pipelines',
+    feature3Text: 'Chain agents for complex workflows — task development, MR review, epic decomposition.',
+    feature4Title: 'Agent Memory',
+    feature4Text: 'Agents remember context between sessions — decisions, patterns, project knowledge.',
+    poweredBy: 'Powered by Claude. Each team member uses their own account.',
+    integrationsTitle: 'Works with your tools',
+  },
+
   // Integrations
   integrations: {
     title: 'Integrations',
