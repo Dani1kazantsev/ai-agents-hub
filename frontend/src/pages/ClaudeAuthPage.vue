@@ -88,7 +88,6 @@ async function disconnect() {
 
 function submitCode() {
   if (!authCode.value.trim() || !ws.value) return
-  submittingCode.value = true
   ws.value.send(JSON.stringify({ type: 'input', data: authCode.value.trim() + '\n' }))
   authCode.value = ''
 }
@@ -222,7 +221,7 @@ checkStatus()
               />
               <button
                 @click="submitCode"
-                :disabled="!authCode.trim() || submittingCode"
+                :disabled="!authCode.trim()"
                 class="px-4 py-2 bg-[#5988FF] text-white rounded-lg text-sm font-medium hover:bg-[#4A75E6] transition-colors disabled:opacity-50"
               >
                 {{ $t('claudeAuth.submitCode') }}

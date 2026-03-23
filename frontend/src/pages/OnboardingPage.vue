@@ -81,7 +81,6 @@ function startClaudeAuth() {
 
 function submitAuthCode() {
   if (!authCode.value.trim() || !ws.value) return
-  submittingCode.value = true
   ws.value.send(JSON.stringify({ type: 'input', data: authCode.value.trim() + '\n' }))
   authCode.value = ''
 }
@@ -378,7 +377,7 @@ checkClaudeStatus()
                   />
                   <button
                     @click="submitAuthCode"
-                    :disabled="!authCode.trim() || submittingCode"
+                    :disabled="!authCode.trim()"
                     class="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                   >
                     {{ $t('claudeAuth.submitCode') }}
