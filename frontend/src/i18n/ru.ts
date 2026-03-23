@@ -284,6 +284,9 @@ export default {
     connectionError: 'Ошибка подключения',
     disconnected: 'Claude аккаунт отключен',
     disconnectError: 'Ошибка при отключении',
+    pasteCode: 'Получили код? Вставьте его сюда:',
+    codePlaceholder: 'Вставьте код авторизации...',
+    submitCode: 'Отправить',
   },
 
   // Onboarding

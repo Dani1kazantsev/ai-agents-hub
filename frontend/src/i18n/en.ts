@@ -284,6 +284,9 @@ export default {
     connectionError: 'Connection error',
     disconnected: 'Claude account disconnected',
     disconnectError: 'Error disconnecting',
+    pasteCode: 'Got a code? Paste it here:',
+    codePlaceholder: 'Paste authorization code...',
+    submitCode: 'Submit',
   },
 
   // Onboarding

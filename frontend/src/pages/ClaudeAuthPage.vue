@@ -16,6 +16,8 @@ const authUrl = ref('')
 const terminalOutput = ref<string[]>([])
 const ws = ref<WebSocket | null>(null)
 const pollTimer = ref<ReturnType<typeof setInterval> | null>(null)
+const authCode = ref('')
+const submittingCode = ref(false)
 
 async function checkStatus() {
   status.value = 'checking'
@@ -82,6 +84,13 @@ async function disconnect() {
   } catch {
     toast.error(t('claudeAuth.disconnectError'))
   }
+}
+
+function submitCode() {
+  if (!authCode.value.trim() || !ws.value) return
+  submittingCode.value = true
+  ws.value.send(JSON.stringify({ type: 'input', data: authCode.value.trim() + '\n' }))
+  authCode.value = ''
 }
 
 function startPolling() {
@@ -197,6 +206,29 @@ checkStatus()
           <p class="text-xs text-[var(--color-text-muted)] mt-2">
             {{ $t('claudeAuth.returnHere') }}
           </p>
+
+          <!-- Auth code input -->
+          <div class="mt-4 p-4 bg-[var(--color-bg-main)] border border-[var(--color-border)] rounded-lg">
+            <p class="text-sm text-[var(--color-text-primary)] font-medium mb-2">
+              {{ $t('claudeAuth.pasteCode') }}
+            </p>
+            <div class="flex gap-2">
+              <input
+                v-model="authCode"
+                type="text"
+                :placeholder="$t('claudeAuth.codePlaceholder')"
+                class="flex-1 px-3 py-2 border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-primary)] rounded-lg text-sm font-mono outline-none focus:border-[#5988FF] transition-colors"
+                @keydown.enter="submitCode"
+              />
+              <button
+                @click="submitCode"
+                :disabled="!authCode.trim() || submittingCode"
+                class="px-4 py-2 bg-[#5988FF] text-white rounded-lg text-sm font-medium hover:bg-[#4A75E6] transition-colors disabled:opacity-50"
+              >
+                {{ $t('claudeAuth.submitCode') }}
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Loading state -->
