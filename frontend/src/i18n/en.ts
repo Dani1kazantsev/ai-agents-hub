@@ -62,6 +62,7 @@ export default {
     tools: 'Tools',
     memory: 'Memory',
     claudeAccount: 'Claude Account',
+    integrations: 'Integrations',
     lightTheme: 'Light theme',
     darkTheme: 'Dark theme',
   },
@@ -412,5 +413,24 @@ export default {
       replace_all_matching_properties: 'Replace properties',
       export_nodes: 'Export nodes',
     },
+  },
+
+  // Integrations
+  integrations: {
+    title: 'Integrations',
+    subtitle: 'Connect your tools — Jira, GitLab, databases, and more',
+    connected: 'Connected',
+    notConnected: 'Not connected',
+    configure: 'Configure',
+    testConnection: 'Test Connection',
+    testing: 'Testing...',
+    testSuccess: 'Connection successful',
+    testFailed: 'Connection failed',
+    saved: 'Integration saved',
+    saveError: 'Failed to save integration',
+    loadError: 'Failed to load integrations',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    noIntegrations: 'No integrations available',
   },
 }

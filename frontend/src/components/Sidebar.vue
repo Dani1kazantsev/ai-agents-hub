@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { LayoutGrid, MessageSquare, GitBranch, Settings, Zap, LogOut, Sun, Moon, ShieldCheck, Brain, Globe } from 'lucide-vue-next'
+import { LayoutGrid, MessageSquare, GitBranch, Settings, Zap, LogOut, Sun, Moon, ShieldCheck, Brain, Globe, Plug } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { setLocale } from '@/i18n'
@@ -18,6 +18,7 @@ const navItems = computed(() => [
   { label: t('sidebar.myChats'), icon: MessageSquare, path: '/chats' },
   { label: t('sidebar.pipelines'), icon: GitBranch, path: '/pipelines' },
   { label: t('sidebar.admin'), icon: Settings, path: '/admin' },
+  { label: t('sidebar.integrations'), icon: Plug, path: '/admin/integrations' },
 ])
 
 function isActive(path: string) {

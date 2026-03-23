@@ -27,6 +27,7 @@ const router = createRouter({
     { path: '/pipelines/:id/edit', component: PipelineEditorPage },
     { path: '/pipelines/run/:id', component: PipelineRunPage },
     { path: '/admin', component: AdminPage },
+    { path: '/admin/integrations', component: () => import('@/pages/IntegrationsPage.vue') },
     { path: '/admin/agents/new', component: AgentEditorPage },
     { path: '/admin/agents/:id', component: AgentEditorPage },
     { path: '/agents/:id/memory', component: MemoryPage },

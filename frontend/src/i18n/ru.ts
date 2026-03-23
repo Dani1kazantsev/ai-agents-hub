@@ -62,6 +62,7 @@ export default {
     tools: 'Инструменты',
     memory: 'Память',
     claudeAccount: 'Claude аккаунт',
+    integrations: 'Интеграции',
     lightTheme: 'Светлая тема',
     darkTheme: 'Тёмная тема',
   },
@@ -412,5 +413,24 @@ export default {
       replace_all_matching_properties: 'Замена свойств',
       export_nodes: 'Экспорт нод',
     },
+  },
+
+  // Integrations
+  integrations: {
+    title: 'Интеграции',
+    subtitle: 'Подключите ваши инструменты — Jira, GitLab, базы данных и другие',
+    connected: 'Подключено',
+    notConnected: 'Не подключено',
+    configure: 'Настроить',
+    testConnection: 'Проверить соединение',
+    testing: 'Проверка...',
+    testSuccess: 'Соединение успешно',
+    testFailed: 'Не удалось подключиться',
+    saved: 'Интеграция сохранена',
+    saveError: 'Не удалось сохранить интеграцию',
+    loadError: 'Не удалось загрузить интеграции',
+    enabled: 'Включена',
+    disabled: 'Отключена',
+    noIntegrations: 'Нет доступных интеграций',
   },
 }
