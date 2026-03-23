@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search } from 'lucide-vue-next'
+import { Search, Plus } from 'lucide-vue-next'
 import { useAgentsStore } from '@/stores/agents'
 import { useChatStore } from '@/stores/chat'
 import AgentCard from '@/components/AgentCard.vue'
@@ -82,14 +82,23 @@ onMounted(() => {
           {{ $t('catalog.subtitle') }}
         </p>
       </div>
-      <div class="relative">
-        <Search :size="18" class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+      <div class="flex items-center gap-3">
+        <router-link
+          to="/admin/agents/new"
+          class="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-lg text-sm font-medium font-heading hover:opacity-90 transition-opacity shrink-0"
+        >
+          <Plus :size="16" />
+          {{ $t('catalog.createAgent') }}
+        </router-link>
+        <div class="relative">
+          <Search :size="18" class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
         <input
           v-model="searchQuery"
           type="text"
           :placeholder="$t('catalog.searchPlaceholder')"
           class="w-[280px] pl-10 pr-4 py-2.5 border border-border bg-bg-input rounded-lg text-sm outline-none focus:border-text-secondary transition-colors"
         />
+      </div>
       </div>
     </div>
     <div class="flex gap-2 mt-6 mb-8">

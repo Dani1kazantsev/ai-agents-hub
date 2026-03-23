@@ -76,6 +76,7 @@ export default {
     pencilRequired: 'Для работы этого агента необходимо установить Pencil на сервере',
     chatCreateError: 'Не удалось создать чат',
     openChat: 'Открыть чат',
+    createAgent: 'Создать агента',
     requiresPencil: 'Требуется Pencil',
   },
 
@@ -432,5 +433,6 @@ export default {
     enabled: 'Включена',
     disabled: 'Отключена',
     noIntegrations: 'Нет доступных интеграций',
+    learnMore: 'Подробнее',
   },
 }

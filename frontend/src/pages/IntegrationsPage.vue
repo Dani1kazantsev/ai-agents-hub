@@ -25,6 +25,8 @@ interface Integration {
   is_connected: boolean
   is_enabled: boolean
   values: Record<string, string>
+  help_text: string
+  help_url: string
 }
 
 const integrations = ref<Integration[]>([])
@@ -239,6 +241,20 @@ onMounted(() => {
           <button class="text-text-secondary hover:text-text-primary transition-colors" @click="closeConfigure">
             <X :size="18" />
           </button>
+        </div>
+
+        <!-- Help text -->
+        <div v-if="selected.help_text" class="mb-5 p-3 bg-bg-subtle rounded-lg text-sm text-text-secondary">
+          <p>{{ selected.help_text }}</p>
+          <a
+            v-if="selected.help_url"
+            :href="selected.help_url"
+            target="_blank"
+            rel="noopener"
+            class="text-brand hover:underline mt-1 inline-block"
+          >
+            {{ $t('integrations.learnMore') }} &rarr;
+          </a>
         </div>
 
         <div class="flex flex-col gap-4">

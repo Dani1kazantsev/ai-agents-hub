@@ -76,6 +76,7 @@ export default {
     pencilRequired: 'This agent requires Pencil to be installed on the server',
     chatCreateError: 'Failed to create chat',
     openChat: 'Open chat',
+    createAgent: 'Create Agent',
     requiresPencil: 'Requires Pencil',
   },
 
@@ -432,5 +433,6 @@ export default {
     enabled: 'Enabled',
     disabled: 'Disabled',
     noIntegrations: 'No integrations available',
+    learnMore: 'Learn more',
   },
 }

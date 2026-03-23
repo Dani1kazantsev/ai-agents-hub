@@ -20,6 +20,8 @@
 
 Hiring junior developers is expensive and slow. AI Agent Hub gives your team **AI agents that work with your actual tools** — not just chat about them.
 
+> **Powered by [Claude](https://claude.ai).** Each team member connects their own Claude Team or Enterprise account (~$20/month per user). You pay for Claude instead of hiring junior devs — and get agents that work 24/7 with your Jira, GitLab, databases, and Figma.
+
 - **QA Agent** finds bugs, generates test checklists from Jira tasks, reviews MR diffs
 - **PM Agent** creates Jira tasks, decomposes epics, writes sprint reports
 - **Dev Agents** (Frontend, Backend, Mobile) review code, suggest fixes, create MRs
@@ -32,7 +34,7 @@ All agents work through a **chat interface** — just describe what you need in 
 
 ### What you need
 - [Docker](https://docs.docker.com/get-docker/) installed
-- A [Claude](https://claude.ai) Team or Enterprise account (each team member uses their own)
+- A [Claude Team or Enterprise](https://claude.ai/team) account — each team member needs their own (~$20/mo per user). This is what powers the AI agents.
 
 ### Run in 2 minutes
 
